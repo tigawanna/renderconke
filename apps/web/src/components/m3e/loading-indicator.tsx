@@ -15,8 +15,9 @@ const loadingIndicatorVariants = cva(
   {
     variants: {
       variant: {
-        default: "text-primary",
-        contained: "bg-primary-container text-on-primary-container",
+        default: "text-(--md-sys-color-primary)",
+        contained:
+          "bg-(--md-sys-color-primary-container) text-(--md-sys-color-on-primary-container)",
       },
     },
     defaultVariants: { variant: "default" },
@@ -51,6 +52,7 @@ function LoadingIndicator({
   const pathRef = React.useRef<SVGPathElement>(null);
   const groupRef = React.useRef<SVGGElement>(null);
   const speedRef = React.useRef(speed);
+  const initialPath = React.useMemo(() => toPath(morphedShape(0), 1), []);
 
   React.useEffect(() => {
     speedRef.current = speed;
@@ -94,6 +96,7 @@ function LoadingIndicator({
         <g ref={groupRef}>
           <path
             ref={pathRef}
+            d={initialPath}
             fill="currentColor"
             transform={`scale(${variant === "contained" ? r * 0.84 : r})`}
           />
