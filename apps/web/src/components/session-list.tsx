@@ -1,24 +1,25 @@
 import { formatSlot } from "@/data-access-layer/sessionize";
-import { sessionsCollection } from "@/data-access-layer/sessions";
-import { useLiveQuery } from "@tanstack/react-db";
+import { sessionsQueryOptions } from "@/data-access-layer/sessions";
+import { QueryErrorResetBoundary, useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { Component, Suspense, type ReactNode } from "react";
 
 export function SessionList() {
-  const { data, isLoading, isError } = useLiveQuery((q) =>
-    q.from({ session: sessionsCollection }).select(({ session }) => ({
-      id: session.id,
-      title: session.title,
-      startsAt: session.startsAt,
-      endsAt: session.endsAt,
-      room: session.room,
-      speakers: session.speakers,
-    })),
+  return (
+    <QueryErrorResetBoundary>
+      {({ reset }) => (
+        <SessionListErrorBoundary onReset={reset}>
+          <Suspense fallback={<SessionListFallback />}>
+            <SessionListContent />
+          </Suspense>
+        </SessionListErrorBoundary>
+      )}
+    </QueryErrorResetBoundary>
   );
+}
 
-  if (isLoading)
-    return <p className="text-body-large text-on-surface-variant">Loading the programme…</p>;
-  if (isError)
-    return <p className="text-body-large text-error">The programme could not be loaded.</p>;
+function SessionListContent() {
+  const { data } = useSuspenseQuery(sessionsQueryOptions);
 
   return (
     <ul className="divide-outline-variant divide-y">
@@ -44,4 +45,39 @@ export function SessionList() {
       ))}
     </ul>
   );
+}
+
+function SessionListFallback() {
+  return <p className="text-body-large text-on-surface-variant">Loading the programme…</p>;
+}
+
+class SessionListErrorBoundary extends Component<
+  { children: ReactNode; onReset: () => void },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (!this.state.hasError) return this.props.children;
+
+    return (
+      <div className="flex flex-col items-start gap-3">
+        <p className="text-body-large text-error">The programme could not be loaded.</p>
+        <button
+          className="text-label-large text-primary"
+          type="button"
+          onClick={() => {
+            this.props.onReset();
+            this.setState({ hasError: false });
+          }}
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
 }

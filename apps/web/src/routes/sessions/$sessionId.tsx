@@ -1,7 +1,6 @@
 import { formatSlot } from "@/data-access-layer/sessionize";
-import { sessionsCollection, type Session } from "@/data-access-layer/sessions";
-import { eq } from "@tanstack/db";
-import { useLiveQuery } from "@tanstack/react-db";
+import { sessionsQueryOptions } from "@/data-access-layer/sessions";
+import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/sessions/$sessionId")({
@@ -10,15 +9,10 @@ export const Route = createFileRoute("/sessions/$sessionId")({
 
 function SessionPage() {
   const { sessionId } = Route.useParams();
-  const { data, isLoading } = useLiveQuery(
-    (q) =>
-      q
-        .from({ session: sessionsCollection })
-        .where(({ session }) => eq(session.id, sessionId))
-        .findOne(),
-    [sessionId],
-  );
-  const session = data as Session | undefined;
+  const { data: session, isLoading } = useQuery({
+    ...sessionsQueryOptions,
+    select: (sessions) => sessions.find((session) => session.id === sessionId),
+  });
 
   return (
     <main className="mx-auto max-w-3xl px-5 pt-8 pb-16">

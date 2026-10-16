@@ -1,20 +1,14 @@
-import { speakersCollection } from "@/data-access-layer/speakers";
-import { useLiveQuery } from "@tanstack/react-db";
+import { speakersQueryOptions } from "@/data-access-layer/speakers";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 
 export function SpeakerList() {
-  const { data, isLoading, isError } = useLiveQuery((q) =>
-    q.from({ speaker: speakersCollection }).select(({ speaker }) => ({
-      id: speaker.id,
-      fullName: speaker.fullName,
-      tagLine: speaker.tagLine,
-      profilePicture: speaker.profilePicture,
-    })),
-  );
+  const { data, isLoading, isError } = useQuery(speakersQueryOptions);
 
   if (isLoading)
     return <p className="text-body-large text-on-surface-variant">Loading speakers…</p>;
-  if (isError) return <p className="text-body-large text-error">Speakers could not be loaded.</p>;
+  if (isError || !data)
+    return <p className="text-body-large text-error">Speakers could not be loaded.</p>;
 
   return (
     <ul className="grid gap-6 sm:grid-cols-2">

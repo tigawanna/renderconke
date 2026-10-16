@@ -1,8 +1,8 @@
-import { ThemeControls } from "@/components/theme-controls";
+import { Button } from "@/components/m3e/button";
 import { EVENT_CONFIG } from "@/data-access-layer/event-config";
 import { Link } from "@tanstack/react-router";
 
-export function SiteHeader() {
+export function SiteHeader({ onOpenTheme }: { onOpenTheme: () => void }) {
   return (
     <header className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-4 bg-surface/90 px-5 py-4 backdrop-blur-md">
       <div>
@@ -20,7 +20,9 @@ export function SiteHeader() {
         <Link to="/speakers" className="text-label-large no-underline">
           Speakers
         </Link>
-        <ThemeControls />
+        <Button variant="tonal" size="sm" onClick={onOpenTheme}>
+          Theme
+        </Button>
       </nav>
     </header>
   );

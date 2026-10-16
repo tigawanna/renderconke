@@ -1,5 +1,26 @@
 import { EVENT_CONFIG } from "./event-config";
 
+export type SessionizeCategoryItem = {
+  id: number;
+  name: string;
+};
+
+export type SessionizeCategory = {
+  id: number;
+  name: string;
+  categoryItems: SessionizeCategoryItem[];
+  sort: number;
+};
+
+export type SessionizeQuestionAnswer = {
+  id: number;
+  question: string;
+  questionType: string;
+  answer: string;
+  sort: number;
+  answerExtra: string | null;
+};
+
 export async function fetchSessionize<T>(url: string): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), EVENT_CONFIG.programme.timeoutMilliseconds);

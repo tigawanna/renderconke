@@ -1,6 +1,5 @@
-import { speakersCollection, type Speaker } from "@/data-access-layer/speakers";
-import { eq } from "@tanstack/db";
-import { useLiveQuery } from "@tanstack/react-db";
+import { speakersQueryOptions } from "@/data-access-layer/speakers";
+import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/speakers/$speakerId")({
@@ -9,15 +8,10 @@ export const Route = createFileRoute("/speakers/$speakerId")({
 
 function SpeakerPage() {
   const { speakerId } = Route.useParams();
-  const { data, isLoading } = useLiveQuery(
-    (q) =>
-      q
-        .from({ speaker: speakersCollection })
-        .where(({ speaker }) => eq(speaker.id, speakerId))
-        .findOne(),
-    [speakerId],
-  );
-  const speaker = data as Speaker | undefined;
+  const { data: speaker, isLoading } = useQuery({
+    ...speakersQueryOptions,
+    select: (speakers) => speakers.find((speaker) => speaker.id === speakerId),
+  });
 
   return (
     <main className="mx-auto max-w-3xl px-5 pt-8 pb-16">

@@ -22,7 +22,6 @@ catalog:
 catalogMode: prefer
 
 overrides:
-  "@tanstack/db": 0.15.0
   vite: "catalog:"
   vitest: "catalog:"
 

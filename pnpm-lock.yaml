@@ -43,7 +43,6 @@ catalogs:
 overrides:
   vite: npm:@voidzero-dev/vite-plus-core@latest
   vitest: 4.1.9
-  '@tanstack/db': 0.15.0
 
 importers:
 
@@ -73,18 +72,6 @@ importers:
       '@material/material-color-utilities':
         specifier: 'catalog:'
         version: 0.4.0
-      '@tanstack/browser-db-sqlite-persistence':
-        specifier: 0.2.35
-        version: 0.2.35(@journeyapps/wa-sqlite@1.7.2)(typescript@5.9.3)
-      '@tanstack/db':
-        specifier: 0.15.0
-        version: 0.15.0(typescript@5.9.3)
-      '@tanstack/query-db-collection':
-        specifier: 1.4.5
-        version: 1.4.5(@tanstack/query-core@5.104.3)(typescript@5.9.3)
-      '@tanstack/react-db':
-        specifier: 0.5.10
-        version: 0.5.10(react@19.3.1)(typescript@5.9.3)
       '@tanstack/react-query':
         specifier: 5.104.3
         version: 5.104.3(react@19.3.1)
@@ -374,9 +361,6 @@ packages:
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
-
-  '@journeyapps/wa-sqlite@1.7.2':
-    resolution: {integrity: sha512-EVRMzqHtHgJBFcTGOgQ5/YlxrYFSXLFFztC5yo6+jQx2mqFR+a1kkLV4IirquiBzIonjmYXfBtvZ26fmI8r9Nw==}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -817,48 +801,12 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
-  '@tanstack/browser-db-sqlite-persistence@0.2.35':
-    resolution: {integrity: sha512-FK/Ic34Un29rLaeAsxHEY2myPKVGW5IhKGLngeUJTnWx271ok1kN/V6rBJ7PZ6VanWS3yk8z2FuGSG7cmdlNlQ==}
-    peerDependencies:
-      '@journeyapps/wa-sqlite': ^1.4.1
-      typescript: '>=4.7'
-
-  '@tanstack/db-ivm@0.2.0':
-    resolution: {integrity: sha512-AuMuGzVdWR5qzJPRYajmrUp95vMo0duvMZ0zBjMOvaI9rkh2GHZWCsJ/p7s81UN4Lep6HHJjahnYUF+XVL0+AQ==}
-    peerDependencies:
-      typescript: '>=4.7'
-
-  '@tanstack/db-sqlite-persistence-core@0.4.10':
-    resolution: {integrity: sha512-Z1xMKJLjLg290aGLsO4fEsK9j4TODlQyhSTVqmm+9oR2qsc6NGq8x7A0DpWyt6srpCzqMfOGduQCGFJmhBShUw==}
-    peerDependencies:
-      typescript: '>=4.7'
-
-  '@tanstack/db@0.15.0':
-    resolution: {integrity: sha512-truZ/WWSS48goC3JlxR2dbjSxYcVfwLtA8Z8xexvayR8HG1Jii040rS+PKUs+C50QGNfUQo5jWQUZ+lERZYeQw==}
-    peerDependencies:
-      typescript: '>=4.7'
-
   '@tanstack/history@1.162.5':
     resolution: {integrity: sha512-w1+YvwmTkwt5n8yUqEH3IWZ9DsmorCZW/EQ3KYHnqEgIkOZpH54NvW6/Epq3Dzb8H0ifIeYX8PExvrNLIH5FIA==}
     engines: {node: '>=20.19'}
 
-  '@tanstack/pacer-lite@0.2.2':
-    resolution: {integrity: sha512-eQ1MyLKCHyXiH7NbdmB80W77OhiMgGBUb+qDx/8WMGbwg5Lf/NlfD0TfNYAqY77i8V3AxoDoYdICrQE5ADw4Yw==}
-    engines: {node: '>=18'}
-
   '@tanstack/query-core@5.104.3':
     resolution: {integrity: sha512-DZY9TuJAOgU3UyHUhXb4CcTYEHNZszlwkPg4VViIwTxOKzLprPUU+rbaPZQd3srqkGOtpaDdKpW972UV/LKlcg==}
-
-  '@tanstack/query-db-collection@1.4.5':
-    resolution: {integrity: sha512-Yd5+4jJfUzAUG4pG6MnpLczgYSBmghKVbKW/4vZ3ZEEnPrYUBze9WyoXvJ8MwVveqXNI+cRXHvhOMH1/OqVjfg==}
-    peerDependencies:
-      '@tanstack/query-core': ^5.90.15
-      typescript: '>=4.7'
-
-  '@tanstack/react-db@0.5.10':
-    resolution: {integrity: sha512-cLXzBQPloOrvS2iyAPY5uJy4a+r/2xTFcUyfuNVMpQQcrNP0QkphxmgfqYDbYMPMKq91RGLgY0hncRu0xslwEg==}
-    peerDependencies:
-      react: '>=18.0.0'
 
   '@tanstack/react-query@5.104.3':
     resolution: {integrity: sha512-5Ts1ImwJKqoJgPkLxl9WrPQy1JEoEmti3MaaODCfBamHUGFk57IFrc+AIksPq+BAm10EsroX56qm398Z42LG7w==}
@@ -1901,10 +1849,6 @@ packages:
   forwarded@0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
     engines: {node: '>= 0.6'}
-
-  fractional-indexing@3.4.0:
-    resolution: {integrity: sha512-8J3glhz2rrpKG6KmI7wmJo3zH1VjeOpN+vTJSw1fOyO+Viqq3zX6/5NGh6oaZB2qIAYdOYuu5Dz9xp4faOO0Pg==}
-    engines: {node: ^14.13.1 || >=16.0.0}
 
   fresh@2.0.0:
     resolution: {integrity: sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31MhntmtwMoaTeF7XFH9hhBp8vITaMidfljRQ6eYWCKkaTK+ykVJHP2A==}
@@ -3366,8 +3310,6 @@ snapshots:
 
   '@iconify/types@2.0.0': {}
 
-  '@journeyapps/wa-sqlite@1.7.2': {}
-
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
       '@jridgewell/sourcemap-codec': 1.6.0
@@ -3688,49 +3630,9 @@ snapshots:
       tailwindcss: 4.3.3
       vite: '@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1)'
 
-  '@tanstack/browser-db-sqlite-persistence@0.2.35(@journeyapps/wa-sqlite@1.7.2)(typescript@5.9.3)':
-    dependencies:
-      '@journeyapps/wa-sqlite': 1.7.2
-      '@tanstack/db-sqlite-persistence-core': 0.4.10(typescript@5.9.3)
-      typescript: 5.9.3
-
-  '@tanstack/db-ivm@0.2.0(typescript@5.9.3)':
-    dependencies:
-      fractional-indexing: 3.4.0
-      typescript: 5.9.3
-
-  '@tanstack/db-sqlite-persistence-core@0.4.10(typescript@5.9.3)':
-    dependencies:
-      '@standard-schema/spec': 1.1.0
-      '@tanstack/db': 0.15.0(typescript@5.9.3)
-      typescript: 5.9.3
-
-  '@tanstack/db@0.15.0(typescript@5.9.3)':
-    dependencies:
-      '@standard-schema/spec': 1.1.0
-      '@tanstack/db-ivm': 0.2.0(typescript@5.9.3)
-      '@tanstack/pacer-lite': 0.2.2
-      typescript: 5.9.3
-
   '@tanstack/history@1.162.5': {}
 
-  '@tanstack/pacer-lite@0.2.2': {}
-
   '@tanstack/query-core@5.104.3': {}
-
-  '@tanstack/query-db-collection@1.4.5(@tanstack/query-core@5.104.3)(typescript@5.9.3)':
-    dependencies:
-      '@standard-schema/spec': 1.1.0
-      '@tanstack/db': 0.15.0(typescript@5.9.3)
-      '@tanstack/query-core': 5.104.3
-      typescript: 5.9.3
-
-  '@tanstack/react-db@0.5.10(react@19.3.1)(typescript@5.9.3)':
-    dependencies:
-      '@tanstack/db': 0.15.0(typescript@5.9.3)
-      react: 19.3.1
-    transitivePeerDependencies:
-      - typescript
 
   '@tanstack/react-query@5.104.3(react@19.3.1)':
     dependencies:
@@ -4117,12 +4019,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/browser-preview@5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))(vitest@4.1.9)':
+  '@vitest/browser-preview@5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))(vitest@4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2)(yaml@2.9.1)))':
     dependencies:
       '@testing-library/dom': 10.4.2
       '@testing-library/user-event': 14.6.8(@testing-library/dom@10.4.2)
-      '@vitest/browser': 5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))(vitest@4.1.9)
-      vitest: 4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))
+      '@vitest/browser': 5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))(vitest@4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2)(yaml@2.9.1)))
+      vitest: 4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2)(yaml@2.9.1))
     transitivePeerDependencies:
       - bufferutil
       - msw
@@ -4141,7 +4043,7 @@ snapshots:
       - utf-8-validate
       - vite
 
-  '@vitest/browser@5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))(vitest@4.1.9)':
+  '@vitest/browser@5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))(vitest@4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2)(yaml@2.9.1)))':
     dependencies:
       '@blazediff/core': 1.10.0
       '@vitest/mocker': 5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))
@@ -4151,7 +4053,7 @@ snapshots:
       pngjs: 7.0.0
       sirv: 3.0.2
       tinyrainbow: 3.2.0
-      vitest: 4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))
+      vitest: 4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2)(yaml@2.9.1))
       ws: 8.22.0
     transitivePeerDependencies:
       - bufferutil
@@ -4259,7 +4161,7 @@ snapshots:
       pathe: 2.0.3
       sirv: 3.0.2
       tinyrainbow: 3.2.0
-      vitest: 4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))
+      vitest: 4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2)(yaml@2.9.1))
 
   '@vitest/utils@4.1.9':
     dependencies:
@@ -4791,8 +4693,6 @@ snapshots:
   flatted@3.4.4: {}
 
   forwarded@0.2.0: {}
-
-  fractional-indexing@3.4.0: {}
 
   fresh@2.0.0: {}
 
@@ -5760,8 +5660,8 @@ snapshots:
     dependencies:
       '@oxc-project/types': 0.154.0
       '@oxlint/plugins': 1.88.0
-      '@vitest/browser': 5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))(vitest@4.1.9)
-      '@vitest/browser-preview': 5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))(vitest@4.1.9)
+      '@vitest/browser': 5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))(vitest@4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2)(yaml@2.9.1)))
+      '@vitest/browser-preview': 5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))(vitest@4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2)(yaml@2.9.1)))
       '@vitest/mocker': 5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))
       '@vitest/pretty-format': 5.0.5
       '@vitest/snapshot': 5.0.5
@@ -5771,7 +5671,7 @@ snapshots:
       oxlint: 1.88.0(oxlint-tsgolint@7.0.2004)(vite-plus@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))
       oxlint-tsgolint: 7.0.2004
       vite: '@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1)'
-      vitest: 4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))
+      vitest: 4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2)(yaml@2.9.1))(vitest@4.1.9))(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))
     optionalDependencies:
       '@voidzero-dev/vite-plus-darwin-arm64': 1.3.0
       '@voidzero-dev/vite-plus-darwin-x64': 1.3.0
@@ -5880,7 +5780,7 @@ snapshots:
     optionalDependencies:
       vite: '@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1)'
 
-  vitest@4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1)):
+  vitest@4.1.9(@types/node@26.6.5)(@vitest/browser-preview@5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2)(yaml@2.9.1))(vitest@4.1.9))(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1)):
     dependencies:
       '@vitest/expect': 4.1.9
       '@vitest/mocker': 4.1.9(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))
@@ -5904,7 +5804,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 26.6.5
-      '@vitest/browser-preview': 5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@5.9.3)(yaml@2.9.1))(vitest@4.1.9)
+      '@vitest/browser-preview': 5.0.5(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2)(yaml@2.9.1))(vitest@4.1.9)
     transitivePeerDependencies:
       - msw
 

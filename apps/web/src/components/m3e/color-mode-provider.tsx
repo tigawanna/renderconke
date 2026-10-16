@@ -97,8 +97,14 @@ export function ColorModeProvider({
   disableTransitionOnChange = true,
   toggleKey = "d",
 }: ColorModeProviderProps) {
-  const [mode, setModeState] = React.useState<ColorMode>(() => readMode(storageKey, defaultMode));
-  const [resolvedMode, setResolvedMode] = React.useState<ResolvedColorMode>(() => resolve(mode));
+  const [mode, setModeState] = React.useState<ColorMode>(defaultMode);
+  const [resolvedMode, setResolvedMode] = React.useState<ResolvedColorMode>(
+    defaultMode === "dark" ? "dark" : "light",
+  );
+
+  React.useEffect(() => {
+    setModeState(readMode(storageKey, defaultMode));
+  }, [storageKey, defaultMode]);
 
   const setMode = React.useCallback(
     (next: ColorMode) => {
