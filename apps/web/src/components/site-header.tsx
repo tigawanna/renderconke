@@ -17,22 +17,20 @@ export function SiteHeader({
       ? "Sessions"
       : "Stage";
   const segments = pathname.split("/").filter(Boolean);
-  const parent = segments.length > 1 ? (`/${segments[0]}` as "/sessions" | "/speakers") : null;
+  const parent = segments.length > 1 ? (`/${segments[0]}` as "/sessions" | "/speakers") : "/";
 
   return (
     <header className="sticky top-0 z-10 flex items-start justify-between gap-3 bg-surface/90 px-5 pt-3 pb-2 backdrop-blur-md">
       <div className="flex min-w-0 items-center gap-1">
-        {parent ? (
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Back"
-            nativeButton={false}
-            render={<Link to={parent} />}
-          >
-            <Icon name="arrow_back" />
-          </Button>
-        ) : null}
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Back"
+          nativeButton={false}
+          render={<Link to={parent} />}
+        >
+          <Icon name="arrow_back" />
+        </Button>
 
         <div className="min-w-0">
           <p className="text-title-large truncate">{section}</p>
