@@ -11,18 +11,24 @@ export function EmptyState({
   icon,
   title,
   description,
+  tone = "default",
 }: {
   icon: string;
   title: string;
   description: string;
+  tone?: "default" | "error";
 }) {
+  const error = tone === "error";
   return (
     <Empty>
       <EmptyHeader>
-        <EmptyMedia variant="icon">
+        <EmptyMedia
+          variant="icon"
+          className={error ? "bg-error-container text-on-error-container" : undefined}
+        >
           <Icon name={icon} />
         </EmptyMedia>
-        <EmptyTitle>{title}</EmptyTitle>
+        <EmptyTitle className={error ? "text-error" : undefined}>{title}</EmptyTitle>
         <EmptyDescription>{description}</EmptyDescription>
       </EmptyHeader>
     </Empty>

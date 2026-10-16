@@ -16,17 +16,32 @@ export function SiteHeader({
     : pathname.startsWith("/sessions")
       ? "Sessions"
       : null;
+  const segments = pathname.split("/").filter(Boolean);
+  const parent = segments.length > 1 ? (`/${segments[0]}` as "/sessions" | "/speakers") : null;
 
   return (
     <header className="sticky top-0 z-10 flex items-start justify-between gap-3 bg-surface/90 px-5 py-4 backdrop-blur-md">
-      <div className="min-w-0">
-        <Link to="/" className="text-title-large block truncate no-underline">
-          RenderCon {EVENT_CONFIG.year}
-          {section ? <span className="text-on-surface-variant"> · {section}</span> : null}
-        </Link>
-        <p className="text-body-medium text-on-surface-variant truncate">
-          {EVENT_CONFIG.dates.displayDate} · {EVENT_CONFIG.venue.fullAddress}
-        </p>
+      <div className="flex min-w-0 items-center gap-1">
+        {parent ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Back"
+            nativeButton={false}
+            render={<Link to={parent} />}
+          >
+            <Icon name="arrow_back" />
+          </Button>
+        ) : null}
+        <div className="min-w-0">
+          <Link to="/" className="text-title-large block truncate no-underline">
+            RenderCon {EVENT_CONFIG.year}
+            {section ? <span className="text-on-surface-variant"> · {section}</span> : null}
+          </Link>
+          <p className="text-body-medium text-on-surface-variant truncate">
+            {EVENT_CONFIG.dates.displayDate} · {EVENT_CONFIG.venue.fullAddress}
+          </p>
+        </div>
       </div>
       <nav className="flex shrink-0 items-center gap-4">
         <Button

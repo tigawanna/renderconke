@@ -107,8 +107,16 @@ function SessionRows({
   query: string;
 }) {
   if (isLoading && !sessions) return <LoadingState label="Loading the programme…" />;
-  if (isError || !sessions)
-    return <p className="text-body-large text-error">The programme could not be loaded.</p>;
+  if (isError || !sessions) {
+    return (
+      <EmptyState
+        tone="error"
+        icon="error"
+        title="Programme unavailable"
+        description="The programme could not be loaded."
+      />
+    );
+  }
   if (sessions.length === 0) {
     return (
       <EmptyState

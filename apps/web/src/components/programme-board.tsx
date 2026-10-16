@@ -149,7 +149,12 @@ export function ProgrammeBoard() {
         <LoadingState label="Loading the programme…" />
       ) : null}
       {programme.isError ? (
-        <p className="text-body-large text-error">The programme could not be loaded.</p>
+        <EmptyState
+          tone="error"
+          icon="error"
+          title="Programme unavailable"
+          description="The programme could not be loaded."
+        />
       ) : null}
       {programme.data && rows.length === 0 ? (
         <EmptyState

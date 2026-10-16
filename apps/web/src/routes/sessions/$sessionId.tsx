@@ -1,5 +1,7 @@
+import { EmptyState } from "@/components/empty-state";
 import { formatSlot } from "@/data-access-layer/sessionize";
 import { sessionsQueryOptions } from "@/data-access-layer/sessions";
+import { speakersQueryOptions } from "@/data-access-layer/speakers";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
@@ -9,16 +11,27 @@ export const Route = createFileRoute("/sessions/$sessionId")({
 
 function SessionPage() {
   const { sessionId } = Route.useParams();
-  const { data: session, isLoading } = useQuery({
+  const {
+    data: session,
+    isLoading,
+    isError,
+  } = useQuery({
     ...sessionsQueryOptions,
     select: (sessions) => sessions.find((session) => session.id === sessionId),
   });
+  const { data: speakers } = useQuery(speakersQueryOptions);
+  const byId = new Map((speakers ?? []).map((speaker) => [speaker.id, speaker]));
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-8">
-      <Link to="/sessions" className="text-label-large text-primary no-underline">
-        All sessions
-      </Link>
+      {isError ? (
+        <EmptyState
+          tone="error"
+          icon="error"
+          title="Session unavailable"
+          description="This session could not be loaded."
+        />
+      ) : null}
       {isLoading ? <p className="text-body-large mt-6">Loading session…</p> : null}
       {!isLoading && !session ? (
         <p className="text-body-large mt-6">This session is not on the programme.</p>
@@ -30,20 +43,39 @@ function SessionPage() {
             {session.room ? ` · ${session.room}` : ""}
           </p>
           <h1 className="text-display-small mt-2 text-balance">{session.title}</h1>
-          <p className="text-body-large mt-4 whitespace-pre-wrap">{session.description}</p>
-          <ul className="mt-6 flex flex-wrap gap-3">
-            {session.speakers.map((speaker) => (
-              <li key={speaker.id}>
-                <Link
-                  to="/speakers/$speakerId"
-                  params={{ speakerId: speaker.id }}
-                  className="text-title-medium bg-primary-container text-on-primary-container rounded-full px-4 py-2 no-underline"
-                >
-                  {speaker.name}
-                </Link>
-              </li>
-            ))}
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {session.speakers.map((person) => {
+              const speaker = byId.get(person.id);
+              return (
+                <li key={person.id}>
+                  <Link
+                    to="/speakers/$speakerId"
+                    params={{ speakerId: person.id }}
+                    className="inline-flex max-w-full items-center gap-2 rounded-full bg-surface-container py-1 pr-3 pl-1 text-on-surface no-underline"
+                  >
+                    {speaker?.profilePicture ? (
+                      <img
+                        alt=""
+                        className="size-8 rounded-full object-cover"
+                        src={speaker.profilePicture}
+                      />
+                    ) : null}
+                    <span className="min-w-0">
+                      <span className="text-label-large block truncate">
+                        {speaker?.fullName ?? person.name}
+                      </span>
+                      {speaker?.tagLine ? (
+                        <span className="text-label-medium text-on-surface-variant block truncate">
+                          {speaker.tagLine}
+                        </span>
+                      ) : null}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
+          <p className="text-body-large mt-6 whitespace-pre-wrap">{session.description}</p>
         </>
       ) : null}
     </main>

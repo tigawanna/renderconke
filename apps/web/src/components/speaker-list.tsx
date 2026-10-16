@@ -46,7 +46,12 @@ export function SpeakerList() {
       <ScrollArea className="min-h-0 flex-1">
         {isLoading && !data ? <LoadingState label="Loading speakers…" /> : null}
         {isError || (!data && !isLoading) ? (
-          <p className="text-body-large text-error">Speakers could not be loaded.</p>
+          <EmptyState
+            tone="error"
+            icon="error"
+            title="Speakers unavailable"
+            description="Speakers could not be loaded."
+          />
         ) : null}
         {data && data.length === 0 ? (
           <EmptyState
