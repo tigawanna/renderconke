@@ -4,11 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "ready": "vp check && vp run -r test && vp run -r build",
-    "dev": "vp run website#dev",
+    "dev": "turbo run dev --filter=web",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "ready": "vp check && turbo run test build",
     "prepare": "vp config"
   },
   "devDependencies": {
+    "turbo": "^2.7.3",
     "vite-plus": "catalog:"
   },
   "devEngines": {
