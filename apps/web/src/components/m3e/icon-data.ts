@@ -70,6 +70,9 @@ const data: IconifyJSON = {
     "close-outline-rounded": {
       parent: "close-rounded",
     },
+    "search-outline-rounded": {
+      parent: "search-rounded",
+    },
   },
 };
 

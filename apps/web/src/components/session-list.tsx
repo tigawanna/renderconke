@@ -1,32 +1,122 @@
 import { EmptyState } from "@/components/empty-state";
 import { LoadingState } from "@/components/loading-state";
+import { ScrollArea } from "@/components/m3e/scroll-area";
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/m3e/item";
+import { SearchResult } from "@/components/m3e/search";
+import { SearchField, useSearchQuery } from "@/components/search-field";
+import { slotId, TimeScale } from "@/components/time-scale";
 import { formatSlot } from "@/data-access-layer/sessionize";
-import { sessionsQueryOptions } from "@/data-access-layer/sessions";
-import { QueryErrorResetBoundary, useSuspenseQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
-import { Component, Suspense, type ReactNode } from "react";
+import { sessionsQueryOptions, type Session } from "@/data-access-layer/sessions";
+import { speakersQueryOptions, type Speaker } from "@/data-access-layer/speakers";
+import { useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 
 export function SessionList() {
+  const client = useQueryClient();
+  const navigate = useNavigate();
+  const hash = useRouterState({ select: (state) => state.location.hash });
+  const list = useRef<HTMLDivElement>(null);
+  const { value, setValue, data, isLoading, isError, isPlaceholderData } = useSearchQuery(
+    ["sessions", "list"],
+    async (query) => {
+      const [sessions, speakers] = await Promise.all([
+        client.ensureQueryData(sessionsQueryOptions),
+        client.ensureQueryData(speakersQueryOptions),
+      ]);
+      return {
+        sessions: sessions.filter((session) => matchesSession(session, query)),
+        speakers,
+      };
+    },
+  );
+
+  useEffect(() => {
+    if (!hash || !data) return;
+    list.current?.querySelector(`#${CSS.escape(hash.replace("#", ""))}`)?.scrollIntoView({
+      block: "start",
+    });
+  }, [hash, data]);
+
+  const sessions = data?.sessions;
+  const byId = new Map((data?.speakers ?? []).map((speaker) => [speaker.id, speaker]));
+
   return (
-    <QueryErrorResetBoundary>
-      {({ reset }) => (
-        <SessionListErrorBoundary onReset={reset}>
-          <Suspense fallback={<LoadingState label="Loading the programme…" />}>
-            <SessionListContent />
-          </Suspense>
-        </SessionListErrorBoundary>
-      )}
-    </QueryErrorResetBoundary>
+    <div className="flex h-full min-h-0 flex-col gap-4">
+      <div className="shrink-0">
+        <SearchField placeholder="Search sessions" value={value} onValueChange={setValue}>
+          {(sessions ?? []).map((session) => (
+            <SearchResult
+              key={session.id}
+              icon="calendar_month"
+              onClick={() =>
+                void navigate({ to: "/sessions/$sessionId", params: { sessionId: session.id } })
+              }
+            >
+              {session.title}
+            </SearchResult>
+          ))}
+        </SearchField>
+      </div>
+      <div className="shrink-0">
+        {sessions && sessions.length > 0 ? (
+          <TimeScale
+            sessions={sessions}
+            onSelect={(startsAt) => {
+              list.current?.querySelector(`#${CSS.escape(slotId(startsAt))}`)?.scrollIntoView({
+                block: "start",
+              });
+            }}
+          />
+        ) : null}
+      </div>
+      <ScrollArea ref={list} className="min-h-0 flex-1">
+        <SessionRows
+          byId={byId}
+          isError={isError}
+          isLoading={isLoading}
+          isPlaceholderData={isPlaceholderData}
+          query={value}
+          sessions={sessions}
+        />
+      </ScrollArea>
+    </div>
   );
 }
 
-function SessionListContent() {
-  const { data } = useSuspenseQuery(sessionsQueryOptions);
-
-  if (data.length === 0) {
+function SessionRows({
+  sessions,
+  byId,
+  isLoading,
+  isError,
+  isPlaceholderData,
+  query,
+}: {
+  sessions: Session[] | undefined;
+  byId: Map<string, Speaker>;
+  isLoading: boolean;
+  isError: boolean;
+  isPlaceholderData: boolean;
+  query: string;
+}) {
+  if (isLoading && !sessions) return <LoadingState label="Loading the programme…" />;
+  if (isError || !sessions)
+    return <p className="text-body-large text-error">The programme could not be loaded.</p>;
+  if (sessions.length === 0) {
     return (
       <EmptyState
-        description="Talks will show up here once they are on the programme."
+        description={
+          query
+            ? "Nothing in the programme matches that search."
+            : "Talks will show up here once they are on the programme."
+        }
         icon="calendar_month"
         title="No sessions"
       />
@@ -34,58 +124,58 @@ function SessionListContent() {
   }
 
   return (
-    <ul className="divide-outline-variant divide-y">
-      {data.map((session) => (
-        <li key={session.id}>
-          <Link
-            to="/sessions/$sessionId"
-            params={{ sessionId: session.id }}
-            className="grid gap-1 py-5 no-underline sm:grid-cols-[9rem_1fr]"
-          >
-            <span className="text-label-large text-primary">
+    <ItemGroup className={isPlaceholderData ? "pb-6 opacity-70" : "pb-6"}>
+      {sessions.map((session) => (
+        <Item
+          key={session.id}
+          id={slotId(session.startsAt)}
+          variant="muted"
+          className="bg-surface-container-low shadow-elevation-1 hover:shadow-elevation-2"
+          render={<Link to="/sessions/$sessionId" params={{ sessionId: session.id }} />}
+        >
+          <ItemMedia>
+            <span className="flex -space-x-2">
+              {session.speakers.slice(0, 3).map((person) => {
+                const speaker = byId.get(person.id);
+                return speaker?.profilePicture ? (
+                  <img
+                    key={person.id}
+                    alt=""
+                    className="size-10 rounded-full object-cover ring-2 ring-surface"
+                    src={speaker.profilePicture}
+                  />
+                ) : (
+                  <span
+                    key={person.id}
+                    className="bg-secondary-container text-on-secondary-container grid size-10 place-items-center rounded-full text-label-large ring-2 ring-surface"
+                  >
+                    {person.name.slice(0, 1)}
+                  </span>
+                );
+              })}
+            </span>
+          </ItemMedia>
+          <ItemContent>
+            <ItemTitle className="text-title-medium">{session.title}</ItemTitle>
+            <ItemDescription>
               {formatSlot(session.startsAt, session.endsAt)}
-            </span>
-            <span>
-              <span className="text-title-large block text-balance">{session.title}</span>
-              <span className="text-body-medium text-on-surface-variant mt-1 block">
-                {session.speakers.map((speaker) => speaker.name).join(", ") || "To be announced"}
-                {session.room ? ` · ${session.room}` : ""}
-              </span>
-            </span>
-          </Link>
-        </li>
+              {session.room ? ` · ${session.room}` : ""}
+              {session.speakers.length
+                ? ` · ${session.speakers.map((speaker) => speaker.name).join(", ")}`
+                : ""}
+            </ItemDescription>
+          </ItemContent>
+        </Item>
       ))}
-    </ul>
+    </ItemGroup>
   );
 }
 
-class SessionListErrorBoundary extends Component<
-  { children: ReactNode; onReset: () => void },
-  { hasError: boolean }
-> {
-  state = { hasError: false };
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  render() {
-    if (!this.state.hasError) return this.props.children;
-
-    return (
-      <div className="flex flex-col items-start gap-3">
-        <p className="text-body-large text-error">The programme could not be loaded.</p>
-        <button
-          className="text-label-large text-primary"
-          type="button"
-          onClick={() => {
-            this.props.onReset();
-            this.setState({ hasError: false });
-          }}
-        >
-          Try again
-        </button>
-      </div>
-    );
-  }
+function matchesSession(session: Session, query: string) {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return true;
+  return [session.title, session.description, session.room, ...session.speakers.map((s) => s.name)]
+    .join(" ")
+    .toLowerCase()
+    .includes(needle);
 }

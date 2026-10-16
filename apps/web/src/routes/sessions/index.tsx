@@ -7,11 +7,8 @@ export const Route = createFileRoute("/sessions/")({
 
 function SessionsPage() {
   return (
-    <main className="mx-auto max-w-3xl px-5 pt-8 pb-16">
-      <h1 className="text-display-small">Sessions</h1>
-      <div className="mt-8">
-        <SessionList />
-      </div>
+    <main className="mx-auto flex h-full max-w-5xl flex-col px-5 py-4">
+      <SessionList />
     </main>
   );
 }

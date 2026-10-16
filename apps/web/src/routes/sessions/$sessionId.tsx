@@ -15,8 +15,8 @@ function SessionPage() {
   });
 
   return (
-    <main className="mx-auto max-w-3xl px-5 pt-8 pb-16">
-      <Link to="/" className="text-label-large text-primary no-underline">
+    <main className="mx-auto max-w-3xl px-5 py-8">
+      <Link to="/sessions" className="text-label-large text-primary no-underline">
         All sessions
       </Link>
       {isLoading ? <p className="text-body-large mt-6">Loading session…</p> : null}

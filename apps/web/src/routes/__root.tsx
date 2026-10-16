@@ -26,11 +26,13 @@ function RootLayout() {
   const [themeOpen, setThemeOpen] = useState(false);
 
   return (
-    <div className="flex min-h-dvh">
+    <div className="flex h-dvh overflow-hidden">
       <SiteNav />
-      <div className="min-w-0 flex-1 pb-20 md:pb-0">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col pb-16 md:pb-0">
         <SiteHeader themeOpen={themeOpen} onOpenTheme={() => setThemeOpen(true)} />
-        <Outlet />
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <Outlet />
+        </div>
       </div>
       <ThemeControls open={themeOpen} onOpenChange={setThemeOpen} />
     </div>

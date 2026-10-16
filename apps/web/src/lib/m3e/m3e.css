@@ -10,6 +10,23 @@
  */
 @import "./m3e.generated.css";
 
+/* Every scroller, including the page, uses the outline color instead of the platform bar. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-sys-color-outline) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline);
+  border-radius: 999px;
+}
+
 /* ---------- shape ---------- */
 
 :root {
