@@ -259,12 +259,10 @@ function SlotScroller({
               <p className="text-label-medium px-4 pt-3 text-right md:hidden">{slotLabel}</p>
             ) : null}
             {row.sessions.map((session, sessionIndex) => (
-              <Link
+              <div
                 key={session.id}
-                to="/sessions/$sessionId"
-                params={{ sessionId: session.id }}
                 className={[
-                  "flex min-h-24 flex-col justify-between gap-3 p-4 no-underline md:min-h-44 md:gap-4 md:rounded-xl md:p-5",
+                  "relative flex min-h-24 flex-col justify-between gap-3 p-4 md:min-h-44 md:gap-4 md:rounded-xl md:p-5",
                   paired && sessionIndex > 0 ? "border-outline border-t-2 md:border-t-0" : "",
                   paired ? "" : "rounded-xl",
                   live
@@ -277,7 +275,13 @@ function SlotScroller({
                       : "bg-surface-container text-on-surface",
                 ].join(" ")}
               >
-                <span className="flex items-center gap-3 md:block">
+                <Link
+                  to="/sessions/$sessionId"
+                  params={{ sessionId: session.id }}
+                  aria-label={session.title}
+                  className="absolute inset-0 rounded-[inherit]"
+                />
+                <span className="pointer-events-none relative flex items-center gap-3 md:block">
                   <span className="flex shrink-0 -space-x-2 md:hidden">
                     {session.speakers.map((person) => {
                       const speaker = byId.get(person.id);
@@ -313,13 +317,15 @@ function SlotScroller({
                     </span>
                   </span>
                 </span>
-                <span className="hidden flex-wrap gap-2 md:flex">
+                <span className="relative z-1 hidden flex-wrap gap-2 md:flex">
                   {session.speakers.map((person) => {
                     const speaker = byId.get(person.id);
                     return (
-                      <span
+                      <Link
                         key={person.id}
-                        className="inline-flex max-w-full items-center gap-2 rounded-full bg-surface-container-lowest py-1 pr-3 pl-1 text-on-surface"
+                        to="/speakers/$speakerId"
+                        params={{ speakerId: person.id }}
+                        className="inline-flex max-w-full items-center gap-2 rounded-full bg-surface-container-lowest py-1 pr-3 pl-1 text-on-surface no-underline"
                       >
                         {speaker?.profilePicture ? (
                           <img
@@ -338,11 +344,11 @@ function SlotScroller({
                             </span>
                           ) : null}
                         </span>
-                      </span>
+                      </Link>
                     );
                   })}
                 </span>
-              </Link>
+              </div>
             ))}
           </section>
         );
