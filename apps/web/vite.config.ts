@@ -1,6 +1,7 @@
-import { fileURLToPath, URL } from "node:url";
+import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
+import { fileURLToPath, URL } from "node:url";
 import { defineConfig, type Plugin } from "vite-plus";
 
 const chromeDevtoolsWellKnown = (): Plugin => ({
@@ -25,5 +26,5 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-  plugins: [chromeDevtoolsWellKnown(), tanstackStart(), viteReact()],
+  plugins: [chromeDevtoolsWellKnown(), tailwindcss(), tanstackStart(), viteReact()],
 });
