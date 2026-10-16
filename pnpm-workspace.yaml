@@ -3,9 +3,7 @@ packages:
   - packages/*
   - tools/*
 
-minimumReleaseAgeExclude:
-  - vite-plus
-  - "@voidzero-dev/*"
+minimumReleaseAge: 0
 
 catalog:
   "@base-ui/react": ^1.9.0
