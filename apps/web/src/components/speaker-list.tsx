@@ -29,7 +29,7 @@ export function SpeakerList() {
   return (
     <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="shrink-0">
-        <SearchField placeholder="Search speakers" value={value} onValueChange={setValue}>
+        <SearchField placeholder="Search speakers" size="sm" value={value} onValueChange={setValue}>
           {(data ?? []).map((speaker) => (
             <SearchResult
               key={speaker.id}

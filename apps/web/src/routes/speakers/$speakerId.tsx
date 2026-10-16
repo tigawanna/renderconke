@@ -73,14 +73,14 @@ function SpeakerPage() {
 
   if (isLoading) {
     return (
-      <main className="mx-auto flex h-full max-w-3xl flex-col px-5 py-8">
+      <main className="mx-auto flex h-full max-w-3xl flex-col px-5 pt-1 pb-8">
         <LoadingState label="Loading speaker…" />
       </main>
     );
   }
   if (isError) {
     return (
-      <main className="mx-auto flex h-full max-w-3xl flex-col px-5 py-8">
+      <main className="mx-auto flex h-full max-w-3xl flex-col px-5 pt-1 pb-8">
         <EmptyState
           tone="error"
           icon="error"
@@ -92,7 +92,7 @@ function SpeakerPage() {
   }
   if (!speaker) {
     return (
-      <main className="mx-auto flex h-full max-w-3xl flex-col px-5 py-8">
+      <main className="mx-auto flex h-full max-w-3xl flex-col px-5 pt-1 pb-8">
         <EmptyState
           icon="person"
           title="Speaker not listed"
@@ -103,7 +103,7 @@ function SpeakerPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-5 py-8">
+    <main className="mx-auto max-w-3xl px-5 pt-1 pb-8">
       <article className="mt-6 flex flex-col gap-6 sm:flex-row">
         <img alt="" className="size-40 rounded-full object-cover" src={speaker.profilePicture} />
         <div>

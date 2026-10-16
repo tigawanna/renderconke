@@ -52,14 +52,14 @@ function SessionPage() {
 
   if (isLoading) {
     return (
-      <main className="mx-auto flex h-full max-w-3xl flex-col px-5 py-8">
+      <main className="mx-auto flex h-full max-w-3xl flex-col px-5 pt-1 pb-8">
         <LoadingState label="Loading session…" />
       </main>
     );
   }
   if (isError) {
     return (
-      <main className="mx-auto flex h-full max-w-3xl flex-col px-5 py-8">
+      <main className="mx-auto flex h-full max-w-3xl flex-col px-5 pt-1 pb-8">
         <EmptyState
           tone="error"
           icon="error"
@@ -71,7 +71,7 @@ function SessionPage() {
   }
   if (!session) {
     return (
-      <main className="mx-auto flex h-full max-w-3xl flex-col px-5 py-8">
+      <main className="mx-auto flex h-full max-w-3xl flex-col px-5 pt-1 pb-8">
         <EmptyState
           icon="calendar_month"
           title="Session not listed"
@@ -82,7 +82,7 @@ function SessionPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-5 py-8">
+    <main className="mx-auto max-w-3xl px-5 pt-1 pb-8">
       <div className="mt-6 flex flex-wrap gap-2">
         <Chip icon="schedule">{formatSlot(session.startsAt, session.endsAt)}</Chip>
         {session.room ? <Chip icon="location_on">{session.room}</Chip> : null}

@@ -21,7 +21,7 @@ export function SiteHeader({
   const parent = segments.length > 1 ? (`/${segments[0]}` as "/sessions" | "/speakers") : null;
 
   return (
-    <header className="sticky top-0 z-10 flex items-start justify-between gap-3 bg-surface/90 px-5 py-4 backdrop-blur-md">
+    <header className="sticky top-0 z-10 flex items-start justify-between gap-3 bg-surface/90 px-5 pt-3 pb-2 backdrop-blur-md">
       <div className="flex min-w-0 items-center gap-1">
         {parent ? (
           <Button
