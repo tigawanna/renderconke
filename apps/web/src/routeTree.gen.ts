@@ -10,15 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StageRouteImport } from './routes/_stage'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
-import { Route as SessionsIndexRouteImport } from './routes/sessions/index'
-import { Route as SessionsSessionIdRouteImport } from './routes/sessions/$sessionId'
-import { Route as SpeakersIndexRouteImport } from './routes/speakers/index'
-import { Route as SpeakersSpeakerIdRouteImport } from './routes/speakers/$speakerId'
+import { Route as StageStageRouteImport } from './routes/_stage/stage'
+import { Route as StageSessionsIndexRouteImport } from './routes/_stage/sessions/index'
+import { Route as StageSessionsSessionIdRouteImport } from './routes/_stage/sessions/$sessionId'
+import { Route as StageSpeakersIndexRouteImport } from './routes/_stage/speakers/index'
+import { Route as StageSpeakersSpeakerIdRouteImport } from './routes/_stage/speakers/$speakerId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StageRoute = StageRouteImport.update({
+  id: '/_stage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -26,57 +32,67 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SessionsIndexRoute = SessionsIndexRouteImport.update({
+const StageStageRoute = StageStageRouteImport.update({
+  id: '/stage',
+  path: '/stage',
+  getParentRoute: () => StageRoute,
+} as any)
+const StageSessionsIndexRoute = StageSessionsIndexRouteImport.update({
   id: '/sessions/',
   path: '/sessions/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => StageRoute,
 } as any)
-const SessionsSessionIdRoute = SessionsSessionIdRouteImport.update({
+const StageSessionsSessionIdRoute = StageSessionsSessionIdRouteImport.update({
   id: '/sessions/$sessionId',
   path: '/sessions/$sessionId',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => StageRoute,
 } as any)
-const SpeakersIndexRoute = SpeakersIndexRouteImport.update({
+const StageSpeakersIndexRoute = StageSpeakersIndexRouteImport.update({
   id: '/speakers/',
   path: '/speakers/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => StageRoute,
 } as any)
-const SpeakersSpeakerIdRoute = SpeakersSpeakerIdRouteImport.update({
+const StageSpeakersSpeakerIdRoute = StageSpeakersSpeakerIdRouteImport.update({
   id: '/speakers/$speakerId',
   path: '/speakers/$speakerId',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => StageRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/robots.txt': typeof RobotsDottxtRoute
-  '/sessions/$sessionId': typeof SessionsSessionIdRoute
-  '/speakers/$speakerId': typeof SpeakersSpeakerIdRoute
-  '/sessions/': typeof SessionsIndexRoute
-  '/speakers/': typeof SpeakersIndexRoute
+  '/stage': typeof StageStageRoute
+  '/sessions/$sessionId': typeof StageSessionsSessionIdRoute
+  '/speakers/$speakerId': typeof StageSpeakersSpeakerIdRoute
+  '/sessions/': typeof StageSessionsIndexRoute
+  '/speakers/': typeof StageSpeakersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/robots.txt': typeof RobotsDottxtRoute
-  '/sessions/$sessionId': typeof SessionsSessionIdRoute
-  '/speakers/$speakerId': typeof SpeakersSpeakerIdRoute
-  '/sessions': typeof SessionsIndexRoute
-  '/speakers': typeof SpeakersIndexRoute
+  '/stage': typeof StageStageRoute
+  '/sessions/$sessionId': typeof StageSessionsSessionIdRoute
+  '/speakers/$speakerId': typeof StageSpeakersSpeakerIdRoute
+  '/sessions': typeof StageSessionsIndexRoute
+  '/speakers': typeof StageSpeakersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_stage': typeof StageRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
-  '/sessions/$sessionId': typeof SessionsSessionIdRoute
-  '/speakers/$speakerId': typeof SpeakersSpeakerIdRoute
-  '/sessions/': typeof SessionsIndexRoute
-  '/speakers/': typeof SpeakersIndexRoute
+  '/_stage/stage': typeof StageStageRoute
+  '/_stage/sessions/$sessionId': typeof StageSessionsSessionIdRoute
+  '/_stage/speakers/$speakerId': typeof StageSpeakersSpeakerIdRoute
+  '/_stage/sessions/': typeof StageSessionsIndexRoute
+  '/_stage/speakers/': typeof StageSpeakersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/robots.txt'
+    | '/stage'
     | '/sessions/$sessionId'
     | '/speakers/$speakerId'
     | '/sessions/'
@@ -85,6 +101,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/robots.txt'
+    | '/stage'
     | '/sessions/$sessionId'
     | '/speakers/$speakerId'
     | '/sessions'
@@ -92,20 +109,19 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_stage'
     | '/robots.txt'
-    | '/sessions/$sessionId'
-    | '/speakers/$speakerId'
-    | '/sessions/'
-    | '/speakers/'
+    | '/_stage/stage'
+    | '/_stage/sessions/$sessionId'
+    | '/_stage/speakers/$speakerId'
+    | '/_stage/sessions/'
+    | '/_stage/speakers/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  StageRoute: typeof StageRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
-  SessionsSessionIdRoute: typeof SessionsSessionIdRoute
-  SpeakersSpeakerIdRoute: typeof SpeakersSpeakerIdRoute
-  SessionsIndexRoute: typeof SessionsIndexRoute
-  SpeakersIndexRoute: typeof SpeakersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -117,6 +133,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_stage': {
+      id: '/_stage'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof StageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/robots.txt': {
       id: '/robots.txt'
       path: '/robots.txt'
@@ -124,44 +147,66 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sessions/': {
-      id: '/sessions/'
+    '/_stage/stage': {
+      id: '/_stage/stage'
+      path: '/stage'
+      fullPath: '/stage'
+      preLoaderRoute: typeof StageStageRouteImport
+      parentRoute: typeof StageRoute
+    }
+    '/_stage/sessions/': {
+      id: '/_stage/sessions/'
       path: '/sessions'
       fullPath: '/sessions/'
-      preLoaderRoute: typeof SessionsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof StageSessionsIndexRouteImport
+      parentRoute: typeof StageRoute
     }
-    '/sessions/$sessionId': {
-      id: '/sessions/$sessionId'
+    '/_stage/sessions/$sessionId': {
+      id: '/_stage/sessions/$sessionId'
       path: '/sessions/$sessionId'
       fullPath: '/sessions/$sessionId'
-      preLoaderRoute: typeof SessionsSessionIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof StageSessionsSessionIdRouteImport
+      parentRoute: typeof StageRoute
     }
-    '/speakers/': {
-      id: '/speakers/'
+    '/_stage/speakers/': {
+      id: '/_stage/speakers/'
       path: '/speakers'
       fullPath: '/speakers/'
-      preLoaderRoute: typeof SpeakersIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof StageSpeakersIndexRouteImport
+      parentRoute: typeof StageRoute
     }
-    '/speakers/$speakerId': {
-      id: '/speakers/$speakerId'
+    '/_stage/speakers/$speakerId': {
+      id: '/_stage/speakers/$speakerId'
       path: '/speakers/$speakerId'
       fullPath: '/speakers/$speakerId'
-      preLoaderRoute: typeof SpeakersSpeakerIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof StageSpeakersSpeakerIdRouteImport
+      parentRoute: typeof StageRoute
     }
   }
 }
 
+interface StageRouteChildren {
+  StageStageRoute: typeof StageStageRoute
+  StageSessionsSessionIdRoute: typeof StageSessionsSessionIdRoute
+  StageSpeakersSpeakerIdRoute: typeof StageSpeakersSpeakerIdRoute
+  StageSessionsIndexRoute: typeof StageSessionsIndexRoute
+  StageSpeakersIndexRoute: typeof StageSpeakersIndexRoute
+}
+
+const StageRouteChildren: StageRouteChildren = {
+  StageStageRoute: StageStageRoute,
+  StageSessionsSessionIdRoute: StageSessionsSessionIdRoute,
+  StageSpeakersSpeakerIdRoute: StageSpeakersSpeakerIdRoute,
+  StageSessionsIndexRoute: StageSessionsIndexRoute,
+  StageSpeakersIndexRoute: StageSpeakersIndexRoute,
+}
+
+const StageRouteWithChildren = StageRoute._addFileChildren(StageRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  StageRoute: StageRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,
-  SessionsSessionIdRoute: SessionsSessionIdRoute,
-  SpeakersSpeakerIdRoute: SpeakersSpeakerIdRoute,
-  SessionsIndexRoute: SessionsIndexRoute,
-  SpeakersIndexRoute: SpeakersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

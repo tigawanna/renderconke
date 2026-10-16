@@ -8,7 +8,7 @@ import { pageHead, sessionJsonLd } from "@/lib/site";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/sessions/$sessionId")({
+export const Route = createFileRoute("/_stage/sessions/$sessionId")({
   loader: async ({ context, params }) => {
     const sessions = await context.queryClient.query({
       ...sessionsQueryOptions,

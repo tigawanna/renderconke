@@ -1,7 +1,6 @@
 import { Button } from "@/components/m3e/button";
 import { Icon } from "@/components/m3e/icon";
 import { EVENT_CONFIG } from "@/data-access-layer/event-config";
-import { siteConfig } from "@/lib/site";
 import { Link, useRouterState } from "@tanstack/react-router";
 
 export function SiteHeader({
@@ -16,7 +15,7 @@ export function SiteHeader({
     ? "Speakers"
     : pathname.startsWith("/sessions")
       ? "Sessions"
-      : null;
+      : "Stage";
   const segments = pathname.split("/").filter(Boolean);
   const parent = segments.length > 1 ? (`/${segments[0]}` as "/sessions" | "/speakers") : null;
 
@@ -34,11 +33,9 @@ export function SiteHeader({
             <Icon name="arrow_back" />
           </Button>
         ) : null}
+
         <div className="min-w-0">
-          <Link to="/" className="text-title-large block truncate no-underline">
-            {siteConfig.name}
-            {section ? <span className="text-on-surface-variant"> · {section}</span> : null}
-          </Link>
+          <p className="text-title-large truncate">{section}</p>
           <p className="text-body-medium text-on-surface-variant truncate">
             {EVENT_CONFIG.dates.displayDate} · {EVENT_CONFIG.venue.fullAddress}
           </p>

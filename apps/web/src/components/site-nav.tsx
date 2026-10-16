@@ -5,9 +5,10 @@ import {
   NavigationRailItem,
 } from "@/components/m3e/navigation";
 import { Link, useRouterState } from "@tanstack/react-router";
+import { RenderconMark } from "./rendercon-mark";
 
 const items = [
-  { to: "/", label: "Home", icon: "home" },
+  { to: "/stage", label: "Stage", icon: "home" },
   { to: "/sessions", label: "Sessions", icon: "calendar_month" },
   { to: "/speakers", label: "Speakers", icon: "groups" },
 ] as const;
@@ -18,10 +19,17 @@ export function SiteNav() {
   return (
     <>
       <NavigationRail className="sticky top-0 hidden h-dvh md:flex">
+        <Link
+          to="/"
+          aria-label="Home"
+          className="focus-ring grid size-11 shrink-0 place-items-center rounded-full no-underline"
+        >
+          <RenderconMark className="h-8 w-auto" />
+        </Link>
         {items.map((item) => (
           <NavigationRailItem
             key={item.to}
-            active={item.to === "/" ? pathname === "/" : pathname.startsWith(item.to)}
+            active={pathname === item.to || pathname.startsWith(`${item.to}/`)}
             icon={item.icon}
             label={item.label}
             render={<Link to={item.to} />}
@@ -32,7 +40,7 @@ export function SiteNav() {
         {items.map((item) => (
           <NavigationBarItem
             key={item.to}
-            active={item.to === "/" ? pathname === "/" : pathname.startsWith(item.to)}
+            active={pathname === item.to || pathname.startsWith(`${item.to}/`)}
             icon={item.icon}
             label={item.label}
             render={<Link to={item.to} />}

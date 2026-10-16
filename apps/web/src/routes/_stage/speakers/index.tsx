@@ -2,7 +2,7 @@ import { SpeakerList } from "@/components/speaker-list";
 import { pageHead, siteConfig } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/speakers/")({
+export const Route = createFileRoute("/_stage/speakers/")({
   head: () =>
     pageHead({
       title: "Speakers",

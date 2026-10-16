@@ -8,7 +8,7 @@ import { pageHead, speakerJsonLd } from "@/lib/site";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/speakers/$speakerId")({
+export const Route = createFileRoute("/_stage/speakers/$speakerId")({
   loader: async ({ context, params }) => {
     const speakers = await context.queryClient.query({
       ...speakersQueryOptions,

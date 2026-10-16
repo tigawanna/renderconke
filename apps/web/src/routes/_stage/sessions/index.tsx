@@ -2,7 +2,7 @@ import { SessionList } from "@/components/session-list";
 import { pageHead, siteConfig } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/sessions/")({
+export const Route = createFileRoute("/_stage/sessions/")({
   head: () =>
     pageHead({
       title: "Programme",
