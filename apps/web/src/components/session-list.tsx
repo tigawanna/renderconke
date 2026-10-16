@@ -11,7 +11,7 @@ import {
 } from "@/components/m3e/item";
 import { SearchResult } from "@/components/m3e/search";
 import { SearchField, useSearchQuery } from "@/components/search-field";
-import { slotId, TimeScale } from "@/components/time-scale";
+import { slotId, TimeFilter, TimeScale } from "@/components/time-scale";
 import { formatSlot } from "@/data-access-layer/sessionize";
 import { sessionsQueryOptions, type Session } from "@/data-access-layer/sessions";
 import { speakersQueryOptions, type Speaker } from "@/data-access-layer/speakers";
@@ -51,7 +51,21 @@ export function SessionList() {
   return (
     <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="shrink-0">
-        <SearchField placeholder="Search sessions" value={value} onValueChange={setValue}>
+        <SearchField
+          placeholder="Search sessions"
+          value={value}
+          onValueChange={setValue}
+          trailing={
+            <TimeFilter
+              sessions={data?.sessions ?? []}
+              onSelect={(startsAt) => {
+                list.current?.querySelector(`#${CSS.escape(slotId(startsAt))}`)?.scrollIntoView({
+                  block: "start",
+                });
+              }}
+            />
+          }
+        >
           {(sessions ?? []).map((session) => (
             <SearchResult
               key={session.id}

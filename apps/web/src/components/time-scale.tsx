@@ -1,6 +1,8 @@
 import { Button } from "@/components/m3e/button";
+import { Icon } from "@/components/m3e/icon";
 import { nairobiInstant } from "@/data-access-layer/sessionize";
 import type { Session } from "@/data-access-layer/sessions";
+import { cn } from "@/lib/m3e/cn";
 import { useEffect, useRef, useState } from "react";
 
 const clock = new Intl.DateTimeFormat("en-KE", {
@@ -14,6 +16,7 @@ export function TimeScale({
   onSelect,
   resetKey = 0,
   value = null,
+  className,
 }: {
   sessions: Session[];
   onSelect: (startsAt: string) => void;
@@ -21,6 +24,7 @@ export function TimeScale({
   resetKey?: number;
   /** session start to show, for example while the programme is scrolled */
   value?: string | null;
+  className?: string;
 }) {
   const track = useRef<HTMLDivElement>(null);
   const chosen = useRef<string | null>(null);
@@ -85,7 +89,12 @@ export function TimeScale({
   };
 
   return (
-    <div className="flex items-start gap-2 px-1 pt-2 pb-12 md:items-center md:pb-6">
+    <div
+      className={cn(
+        "hidden items-start gap-2 px-1 pt-2 pb-12 md:flex md:items-center md:pb-6",
+        className,
+      )}
+    >
       <div className="relative min-w-0 flex-1">
         <div
           ref={track}
@@ -147,6 +156,46 @@ function nearestSession(sessions: Session[], time: number) {
     const best = Math.abs(nairobiInstant(closest.startsAt).getTime() - time);
     return here < best ? session : closest;
   });
+}
+
+/** Phone-only control. The scale itself opens in a bottom drawer. */
+export function TimeFilter(props: {
+  sessions: Session[];
+  onSelect: (startsAt: string) => void;
+  resetKey?: number;
+  value?: string | null;
+}) {
+  const [open, setOpen] = useState(false);
+  if (props.sessions.length === 0) return null;
+
+  return (
+    <div className="md:hidden">
+      <Button
+        variant="text"
+        size="icon"
+        aria-label="Filter by time"
+        aria-expanded={open}
+        className="text-on-surface-variant"
+        onClick={() => setOpen(true)}
+      >
+        <Icon name="schedule" />
+      </Button>
+      {open ? (
+        <>
+          <button
+            type="button"
+            aria-label="Close time filter"
+            className="fixed inset-0 z-20 bg-scrim/32"
+            onClick={() => setOpen(false)}
+          />
+          <div className="fixed inset-x-0 bottom-0 z-30 rounded-t-xl bg-surface-container-low px-3 pt-3 pb-6 shadow-elevation-2">
+            <div className="bg-outline-variant mx-auto mb-2 h-1 w-8 rounded-full" />
+            <TimeScale {...props} className="flex pb-10" />
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
 }
 
 export function slotId(startsAt: string) {

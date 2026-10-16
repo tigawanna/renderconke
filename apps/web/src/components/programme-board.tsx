@@ -2,7 +2,7 @@ import { EmptyState } from "@/components/empty-state";
 import { LoadingState } from "@/components/loading-state";
 import { ScrollArea } from "@/components/m3e/scroll-area";
 import { SearchField, useSearchQuery } from "@/components/search-field";
-import { slotId, TimeScale } from "@/components/time-scale";
+import { slotId, TimeFilter, TimeScale } from "@/components/time-scale";
 import { SearchResult } from "@/components/m3e/search";
 import { formatSlot, nairobiInstant } from "@/data-access-layer/sessionize";
 import { sessionsQueryOptions, type Session } from "@/data-access-layer/sessions";
@@ -100,6 +100,23 @@ export function ProgrammeBoard() {
           placeholder="Search sessions and speakers"
           value={search.value}
           onValueChange={search.setValue}
+          trailing={
+            <TimeFilter
+              resetKey={resetKey}
+              value={highlighted}
+              sessions={programme.data?.sessions ?? []}
+              onSelect={(startsAt) => {
+                fromSlider.current = true;
+                setFocusKey(startsAt);
+                list.current
+                  ?.querySelector(`#${CSS.escape(slotId(startsAt))}`)
+                  ?.scrollIntoView({ block: "center" });
+                window.setTimeout(() => {
+                  fromSlider.current = false;
+                }, 500);
+              }}
+            />
+          }
         >
           {hits?.sessions.map((session) => (
             <SearchResult

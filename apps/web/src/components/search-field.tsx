@@ -16,11 +16,13 @@ export function SearchField({
   placeholder,
   value,
   onValueChange,
+  trailing,
   children,
 }: {
   placeholder: string;
   value: string;
   onValueChange: (value: string) => void;
+  trailing?: ReactNode;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -31,6 +33,7 @@ export function SearchField({
       placeholder={placeholder}
       value={value}
       onOpenChange={setOpen}
+      trailing={trailing}
       onValueChange={(next) => {
         onValueChange(next);
         setOpen(true);
