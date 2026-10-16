@@ -2,10 +2,26 @@ import { EmptyState } from "@/components/empty-state";
 import { formatSlot } from "@/data-access-layer/sessionize";
 import { sessionsQueryOptions } from "@/data-access-layer/sessions";
 import { speakersQueryOptions } from "@/data-access-layer/speakers";
+import { pageHead } from "@/lib/site";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/sessions/$sessionId")({
+  loader: async ({ context, params }) => {
+    const sessions = await context.queryClient.ensureQueryData(sessionsQueryOptions);
+    return sessions.find((session) => session.id === params.sessionId) ?? null;
+  },
+  head: ({ loaderData, params }) =>
+    pageHead({
+      title: loaderData?.title ?? "Session",
+      description: loaderData?.description,
+      path: `/sessions/${params.sessionId}`,
+      kicker: loaderData
+        ? [formatSlot(loaderData.startsAt, loaderData.endsAt), loaderData.room]
+            .filter(Boolean)
+            .join(" · ")
+        : undefined,
+    }),
   component: SessionPage,
 });
 

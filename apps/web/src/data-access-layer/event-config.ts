@@ -19,6 +19,7 @@ export const EVENT_CONFIG = {
   },
   links: {
     tickets: "https://zenlipa.co.ke/events/k6NMNf",
+    website: "https://www.rendercon.org",
     gallery2023: "https://bit.ly/rcke23pics",
     gallery2024: "https://bit.ly/rcke24pics",
     gallery2025: "https://bit.ly/rcke25pics",

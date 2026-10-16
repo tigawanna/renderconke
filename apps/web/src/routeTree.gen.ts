@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OgDotpngRouteImport } from './routes/og[.]png'
 import { Route as SessionsIndexRouteImport } from './routes/sessions/index'
 import { Route as SessionsSessionIdRouteImport } from './routes/sessions/$sessionId'
 import { Route as SpeakersIndexRouteImport } from './routes/speakers/index'
@@ -18,6 +19,11 @@ import { Route as SpeakersSpeakerIdRouteImport } from './routes/speakers/$speake
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OgDotpngRoute = OgDotpngRouteImport.update({
+  id: '/og.png',
+  path: '/og.png',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SessionsIndexRoute = SessionsIndexRouteImport.update({
@@ -43,6 +49,7 @@ const SpeakersSpeakerIdRoute = SpeakersSpeakerIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/og.png': typeof OgDotpngRoute
   '/sessions/$sessionId': typeof SessionsSessionIdRoute
   '/speakers/$speakerId': typeof SpeakersSpeakerIdRoute
   '/sessions/': typeof SessionsIndexRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/og.png': typeof OgDotpngRoute
   '/sessions/$sessionId': typeof SessionsSessionIdRoute
   '/speakers/$speakerId': typeof SpeakersSpeakerIdRoute
   '/sessions': typeof SessionsIndexRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/og.png': typeof OgDotpngRoute
   '/sessions/$sessionId': typeof SessionsSessionIdRoute
   '/speakers/$speakerId': typeof SpeakersSpeakerIdRoute
   '/sessions/': typeof SessionsIndexRoute
@@ -67,6 +76,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/og.png'
     | '/sessions/$sessionId'
     | '/speakers/$speakerId'
     | '/sessions/'
@@ -74,6 +84,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/og.png'
     | '/sessions/$sessionId'
     | '/speakers/$speakerId'
     | '/sessions'
@@ -81,6 +92,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/og.png'
     | '/sessions/$sessionId'
     | '/speakers/$speakerId'
     | '/sessions/'
@@ -89,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  OgDotpngRoute: typeof OgDotpngRoute
   SessionsSessionIdRoute: typeof SessionsSessionIdRoute
   SpeakersSpeakerIdRoute: typeof SpeakersSpeakerIdRoute
   SessionsIndexRoute: typeof SessionsIndexRoute
@@ -102,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/og.png': {
+      id: '/og.png'
+      path: '/og.png'
+      fullPath: '/og.png'
+      preLoaderRoute: typeof OgDotpngRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sessions/': {
@@ -137,6 +157,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  OgDotpngRoute: OgDotpngRoute,
   SessionsSessionIdRoute: SessionsSessionIdRoute,
   SpeakersSpeakerIdRoute: SpeakersSpeakerIdRoute,
   SessionsIndexRoute: SessionsIndexRoute,

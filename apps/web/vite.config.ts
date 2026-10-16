@@ -1,4 +1,5 @@
 import tailwindcss from "@tailwindcss/vite";
+import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
@@ -29,6 +30,8 @@ export default defineConfig({
   ssr: {
     // The package is ESM but its internal imports omit the .js extension.
     noExternal: ["@material/material-color-utilities"],
+    // Native image renderer. Leave it (and its font files) to Node.
+    external: ["takumi-js", "@takumi-rs/core", "@fontsource/inter"],
   },
-  plugins: [chromeDevtoolsWellKnown(), tailwindcss(), tanstackStart(), viteReact()],
+  plugins: [devtools(), chromeDevtoolsWellKnown(), tailwindcss(), tanstackStart(), viteReact()],
 });
