@@ -11,7 +11,7 @@
     "prepare": "vp config"
   },
   "devDependencies": {
-    "turbo": "^2.7.3",
+    "turbo": "2.11.8",
     "vite-plus": "catalog:"
   },
   "devEngines": {

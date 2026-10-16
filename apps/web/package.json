@@ -8,11 +8,14 @@
     "preview": "vp preview"
   },
   "dependencies": {
-    "@tanstack/browser-db-sqlite-persistence": "0.2.12",
-    "@tanstack/db": "0.7.2",
-    "@tanstack/react-db": "0.2.1",
-    "@tanstack/react-router": "^1.170.41",
-    "@tanstack/react-start": "^1.168.60",
+    "@tanstack/browser-db-sqlite-persistence": "0.2.35",
+    "@tanstack/db": "0.15.0",
+    "@tanstack/query-db-collection": "1.4.5",
+    "@tanstack/react-db": "0.5.10",
+    "@tanstack/react-query": "5.104.3",
+    "@tanstack/react-router": "1.170.44",
+    "@tanstack/react-router-ssr-query": "1.167.3",
+    "@tanstack/react-start": "1.169.2",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },
