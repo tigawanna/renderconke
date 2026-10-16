@@ -1,13 +1,18 @@
 import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import { nitro } from "nitro/vite";
 import viteReact from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig, loadEnv } from "vite-plus";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, fileURLToPath(new URL(".", import.meta.url)), "");
-  const host = (env.VITE_SITE_URL || "https://rendercon.org").replace(/\/$/, "");
+  const siteUrl =
+    env.VITE_SITE_URL || process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+  const host = siteUrl
+    ? (/^https?:\/\//.test(siteUrl) ? siteUrl : `https://${siteUrl}`).replace(/\/$/, "")
+    : undefined;
 
   return {
     resolve: {
@@ -29,9 +34,10 @@ export default defineConfig(({ mode }) => {
         },
         sitemap: {
           enabled: true,
-          host,
+          ...(host ? { host } : {}),
         },
       }),
+      nitro(),
       viteReact(),
     ],
   };
