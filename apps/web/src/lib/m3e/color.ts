@@ -173,10 +173,10 @@ export function schemeToCss(scheme: ColorScheme, indent = "  "): string {
     .join("\n");
 }
 
-/** `:root { ...light } .dark { ...dark }` for one theme */
+/** Light on `:root`, dark under `html[data-theme="dark"]`. */
 export function themeCss(
   opts: Omit<SchemeOptions, "dark">,
-  selectors = { light: ":root", dark: ".dark" },
+  selectors = { light: ":root", dark: 'html[data-theme="dark"]' },
 ): string {
   const light = generateScheme({ ...opts, dark: false });
   const dark = generateScheme({ ...opts, dark: true });

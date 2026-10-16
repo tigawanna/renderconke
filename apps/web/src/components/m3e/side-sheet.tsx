@@ -22,6 +22,13 @@ type SideSheetProps = Omit<React.ComponentProps<"aside">, "title"> & {
   side?: "left" | "right";
   /** floats with a margin and rounded corners instead of sitting on the edge */
   detached?: boolean;
+  /**
+   * Overlays the page instead of sharing its width. On a narrow window it
+   * rises from the bottom; from `md` up it sits on `side`.
+   */
+  float?: boolean;
+  /** called when the scrim behind a floating sheet is pressed */
+  onDismiss?: () => void;
   /** in px, 256–400 */
   width?: number;
 };
@@ -30,6 +37,8 @@ function SideSheet({
   open = true,
   side = "right",
   detached = false,
+  float = false,
+  onDismiss,
   width = 360,
   className,
   style,
@@ -39,42 +48,75 @@ function SideSheet({
   const w = Math.min(400, Math.max(256, width));
 
   return (
-    <aside
-      data-slot="side-sheet"
-      data-open={open || undefined}
-      data-side={side}
-      data-detached={detached || undefined}
-      aria-hidden={!open || undefined}
-      inert={!open}
-      style={{ "--side-sheet-w": `${w}px`, ...style } as React.CSSProperties}
-      className={cn(
-        "h-full shrink-0 overflow-hidden transition-[width] motion-spatial-default",
-        open ? (detached ? "w-[calc(var(--side-sheet-w)+1rem)]" : "w-(--side-sheet-w)") : "w-0",
-        side === "left" && "order-first",
-        className,
-      )}
-      {...props}
-    >
-      <div
+    <>
+      {float && open ? (
+        <button
+          type="button"
+          aria-label="Close"
+          className="fixed inset-0 z-20 bg-scrim/32"
+          onClick={onDismiss}
+        />
+      ) : null}
+      <aside
+        data-slot="side-sheet"
+        data-open={open || undefined}
+        data-side={side}
+        data-detached={detached || undefined}
+        data-float={float || undefined}
+        aria-hidden={!open || undefined}
+        inert={!open}
+        style={{ "--side-sheet-w": `${w}px`, ...style } as React.CSSProperties}
         className={cn(
-          "flex h-full w-(--side-sheet-w) flex-col text-on-surface",
-          detached
+          float
             ? cn(
-                "my-0 h-[calc(100%-2rem)] rounded-lg bg-surface-container-low",
-                "mt-4",
-                side === "right" ? "mr-4" : "ml-4",
+                "fixed z-30 flex flex-col overflow-hidden bg-surface-container-low shadow-elevation-2 transition-transform motion-spatial-default",
+                "inset-x-0 bottom-0 max-h-[min(32rem,85dvh)] rounded-t-xl",
+                "md:inset-x-auto md:top-4 md:bottom-4 md:h-auto md:max-h-none md:w-(--side-sheet-w) md:rounded-lg",
+                side === "left" ? "md:left-4" : "md:right-4",
+                open
+                  ? "translate-y-0 md:translate-x-0"
+                  : "translate-y-full md:translate-y-0 md:translate-x-[calc(100%+1rem)]",
+                !open && side === "left" && "md:-translate-x-[calc(100%+1rem)]",
               )
             : cn(
-                "bg-surface",
-                side === "right"
-                  ? "border-l border-outline-variant"
-                  : "border-r border-outline-variant",
+                "h-full shrink-0 overflow-hidden transition-[width] motion-spatial-default",
+                open
+                  ? detached
+                    ? "w-[calc(var(--side-sheet-w)+1rem)]"
+                    : "w-(--side-sheet-w)"
+                  : "w-0",
+                side === "left" && "order-first",
               ),
+          className,
         )}
+        {...props}
       >
-        {children}
-      </div>
-    </aside>
+        <div
+          className={cn(
+            "flex h-full min-h-0 flex-col text-on-surface",
+            float
+              ? "w-full md:w-(--side-sheet-w)"
+              : cn(
+                  "w-(--side-sheet-w)",
+                  detached
+                    ? cn(
+                        "my-0 h-[calc(100%-2rem)] rounded-lg bg-surface-container-low",
+                        "mt-4",
+                        side === "right" ? "mr-4" : "ml-4",
+                      )
+                    : cn(
+                        "bg-surface",
+                        side === "right"
+                          ? "border-l border-outline-variant"
+                          : "border-r border-outline-variant",
+                      ),
+                ),
+          )}
+        >
+          {children}
+        </div>
+      </aside>
+    </>
   );
 }
 

@@ -1,8 +1,15 @@
 import { Button } from "@/components/m3e/button";
+import { Icon } from "@/components/m3e/icon";
 import { EVENT_CONFIG } from "@/data-access-layer/event-config";
 import { Link } from "@tanstack/react-router";
 
-export function SiteHeader({ onOpenTheme }: { onOpenTheme: () => void }) {
+export function SiteHeader({
+  themeOpen,
+  onOpenTheme,
+}: {
+  themeOpen: boolean;
+  onOpenTheme: () => void;
+}) {
   return (
     <header className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-4 bg-surface/90 px-5 py-4 backdrop-blur-md">
       <div>
@@ -14,14 +21,14 @@ export function SiteHeader({ onOpenTheme }: { onOpenTheme: () => void }) {
         </p>
       </div>
       <nav className="flex items-center gap-4">
-        <Link to="/" className="text-label-large no-underline">
-          Sessions
-        </Link>
-        <Link to="/speakers" className="text-label-large no-underline">
-          Speakers
-        </Link>
-        <Button variant="tonal" size="sm" onClick={onOpenTheme}>
-          Theme
+        <Button
+          aria-expanded={themeOpen}
+          aria-label="Theme"
+          size="icon"
+          variant="tonal"
+          onClick={onOpenTheme}
+        >
+          <Icon name="palette" />
         </Button>
       </nav>
     </header>

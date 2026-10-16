@@ -1,3 +1,4 @@
+import { deleteCookie, readCookie, writeCookie } from "@/lib/m3e/theme-cookie";
 import * as React from "react";
 
 import {
@@ -55,13 +56,10 @@ const M3ThemeContext = React.createContext<M3ThemeContextValue | undefined>(unde
 const STYLE_ID = "m3-theme";
 const HEX = /^#[0-9a-f]{6}$/i;
 
-function load(key: string, fallback: M3Theme, persist: boolean): M3Theme {
-  if (!persist) return fallback;
+function parseTheme(raw: string, fallback: M3Theme): M3Theme | null {
   try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return fallback;
     const parsed: unknown = JSON.parse(raw);
-    if (typeof parsed !== "object" || parsed === null) return fallback;
+    if (typeof parsed !== "object" || parsed === null) return null;
     const t: M3Theme = { ...fallback, ...parsed };
     if (!SCHEME_VARIANTS.includes(t.variant)) t.variant = fallback.variant;
     if (!SPEC_VERSIONS.includes(t.spec)) t.spec = fallback.spec;
@@ -69,6 +67,23 @@ function load(key: string, fallback: M3Theme, persist: boolean): M3Theme {
     if (typeof t.source?.primary !== "string" || !HEX.test(t.source.primary))
       t.source = fallback.source;
     return t;
+  } catch {
+    return null;
+  }
+}
+
+function load(key: string, fallback: M3Theme, persist: boolean): M3Theme {
+  if (!persist || typeof document === "undefined") return fallback;
+  const stored = readCookie(key);
+  if (stored) return parseTheme(stored, fallback) ?? fallback;
+  try {
+    const legacy = localStorage.getItem(key);
+    if (!legacy) return fallback;
+    const theme = parseTheme(legacy, fallback);
+    if (!theme) return fallback;
+    writeCookie(key, JSON.stringify(theme));
+    localStorage.removeItem(key);
+    return theme;
   } catch {
     return fallback;
   }
@@ -78,19 +93,17 @@ export type M3ThemeProviderProps = {
   children: React.ReactNode;
   /** the theme before the user changes anything (and after `resetTheme`) */
   defaultTheme?: Partial<M3Theme>;
-  /** localStorage key for the chosen theme */
+  /** cookie name for the chosen theme */
   storageKey?: string;
-  /** remember the chosen theme in localStorage (default true) */
+  /** remember the chosen theme in a cookie (default true) */
   persist?: boolean;
 };
 
 /**
  * Generates the M3 color scheme (light + dark) for the current theme and writes
  * it to a `<style>` tag, plus the motion scheme and shape scale on `<html>`.
- * Light/dark itself is switched by the `.dark` class (see ColorModeProvider).
- *
- * The style tag is written before the browser paints, so a saved theme does
- * not flash the baseline colors first.
+ * Light and dark follow `data-theme` on `<html>` (see ColorModeProvider).
+ * A blocking script in the document head applies the saved theme before hydration.
  */
 export function M3ThemeProvider({
   children,
@@ -104,7 +117,11 @@ export function M3ThemeProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(defaultTheme)],
   );
-  const [theme, setThemeState] = React.useState<M3Theme>(() => load(storageKey, defaults, persist));
+  const [theme, setThemeState] = React.useState<M3Theme>(defaults);
+
+  React.useLayoutEffect(() => {
+    setThemeState(load(storageKey, defaults, persist));
+  }, [storageKey, defaults, persist]);
 
   const css = React.useMemo(
     () =>
@@ -117,15 +134,40 @@ export function M3ThemeProvider({
     [theme.source, theme.variant, theme.contrast, theme.spec],
   );
 
+  const isDefault =
+    theme.source.primary.toLowerCase() === defaults.source.primary.toLowerCase() &&
+    theme.variant === defaults.variant &&
+    theme.contrast === defaults.contrast &&
+    theme.spec === defaults.spec;
+
   React.useLayoutEffect(() => {
-    let style = document.getElementById(STYLE_ID);
+    const existing = document.getElementById(STYLE_ID);
+    if (isDefault) {
+      existing?.remove();
+      if (persist) {
+        try {
+          localStorage.removeItem("m3-theme-css");
+        } catch {
+          // the bundled scheme stays in the stylesheet
+        }
+      }
+      return;
+    }
+    let style = existing;
     if (!style) {
       style = document.createElement("style");
       style.id = STYLE_ID;
       document.head.appendChild(style);
     }
     style.textContent = css;
-  }, [css]);
+    if (persist) {
+      try {
+        localStorage.setItem("m3-theme-css", css);
+      } catch {
+        // the cookie still holds the theme; the next load falls back to the bundled scheme
+      }
+    }
+  }, [css, persist, isDefault]);
 
   React.useLayoutEffect(() => {
     const root = document.documentElement;
@@ -136,11 +178,7 @@ export function M3ThemeProvider({
   const save = React.useCallback(
     (next: M3Theme) => {
       if (!persist) return;
-      try {
-        localStorage.setItem(storageKey, JSON.stringify(next));
-      } catch {
-        // storage may be full or blocked: the theme still applies
-      }
+      writeCookie(storageKey, JSON.stringify(next));
     },
     [storageKey, persist],
   );
@@ -171,8 +209,9 @@ export function M3ThemeProvider({
 
   const resetTheme = React.useCallback(() => {
     if (persist) {
+      deleteCookie(storageKey);
       try {
-        localStorage.removeItem(storageKey);
+        localStorage.removeItem("m3-theme-css");
       } catch {
         // see save
       }

@@ -1,3 +1,4 @@
+import { readCookie, writeCookie } from "@/lib/m3e/theme-cookie";
 import * as React from "react";
 
 /** What the user chose. `system` follows the OS. */
@@ -9,7 +10,7 @@ export type ColorModeProviderProps = {
   children: React.ReactNode;
   /** the mode before the user chooses one (default `system`) */
   defaultMode?: ColorMode;
-  /** localStorage key of the chosen mode. index.html reads it before paint */
+  /** cookie name of the chosen mode. The root document reads it before paint */
   storageKey?: string;
   /** no transitions while the colors swap, so nothing animates through gray */
   disableTransitionOnChange?: boolean;
@@ -45,20 +46,23 @@ const opposite = (mode: ResolvedColorMode): ResolvedColorMode =>
   mode === "dark" ? "light" : "dark";
 
 function readMode(key: string, fallback: ColorMode): ColorMode {
+  const stored = readCookie(key);
+  if (isColorMode(stored)) return stored;
   try {
-    const stored = localStorage.getItem(key);
-    return isColorMode(stored) ? stored : fallback;
+    const legacy = localStorage.getItem(key);
+    if (isColorMode(legacy)) {
+      writeCookie(key, legacy);
+      localStorage.removeItem(key);
+      return legacy;
+    }
   } catch {
-    return fallback;
+    // storage may be blocked
   }
+  return fallback;
 }
 
 function writeMode(key: string, mode: ColorMode) {
-  try {
-    localStorage.setItem(key, mode);
-  } catch {
-    // storage may be blocked: the mode still applies
-  }
+  writeCookie(key, mode);
 }
 
 /** Suspends CSS transitions; call the returned function to bring them back. */
@@ -86,9 +90,9 @@ function isTextEntry(target: EventTarget | null) {
 }
 
 /**
- * Light / dark / system. Puts `light` or `dark` on `<html>` as a class; every
- * M3 color role follows it. Which colors those roles have is the job of
- * `M3ThemeProvider`.
+ * Light / dark / system. Writes the resolved mode to `<html data-theme>`.
+ * Color roles follow that attribute. Which colors those roles have is the job
+ * of `M3ThemeProvider`.
  */
 export function ColorModeProvider({
   children,
@@ -101,9 +105,11 @@ export function ColorModeProvider({
   const [resolvedMode, setResolvedMode] = React.useState<ResolvedColorMode>(
     defaultMode === "dark" ? "dark" : "light",
   );
+  const stored = React.useRef(false);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     setModeState(readMode(storageKey, defaultMode));
+    stored.current = true;
   }, [storageKey, defaultMode]);
 
   const setMode = React.useCallback(
@@ -117,13 +123,12 @@ export function ColorModeProvider({
   const toggleMode = React.useCallback(() => setMode(opposite(resolve(mode))), [mode, setMode]);
 
   // put the resolved mode on <html>, and follow the OS while mode is `system`
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
+    if (!stored.current) return undefined;
     const apply = () => {
       const next = resolve(mode);
       const resume = disableTransitionOnChange ? pauseTransitions() : null;
-      const root = document.documentElement;
-      root.classList.remove("light", "dark");
-      root.classList.add(next);
+      document.documentElement.dataset.theme = next;
       setResolvedMode(next);
       resume?.();
     };
@@ -146,16 +151,6 @@ export function ColorModeProvider({
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [toggleKey, toggleMode]);
-
-  // another tab changed it
-  React.useEffect(() => {
-    const onStorage = (event: StorageEvent) => {
-      if (event.storageArea !== localStorage || event.key !== storageKey) return;
-      setModeState(isColorMode(event.newValue) ? event.newValue : defaultMode);
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, [defaultMode, storageKey]);
 
   const value = React.useMemo(
     () => ({ mode, resolvedMode, setMode, toggleMode }),

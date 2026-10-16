@@ -1,14 +1,36 @@
+import { EmptyState } from "@/components/empty-state";
+import { LoadingState } from "@/components/loading-state";
 import { speakersQueryOptions } from "@/data-access-layer/speakers";
-import { useQuery } from "@tanstack/react-query";
+import { QueryErrorResetBoundary, useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { Component, Suspense, type ReactNode } from "react";
 
 export function SpeakerList() {
-  const { data, isLoading, isError } = useQuery(speakersQueryOptions);
+  return (
+    <QueryErrorResetBoundary>
+      {({ reset }) => (
+        <SpeakerListErrorBoundary onReset={reset}>
+          <Suspense fallback={<LoadingState label="Loading speakers…" />}>
+            <SpeakerListContent />
+          </Suspense>
+        </SpeakerListErrorBoundary>
+      )}
+    </QueryErrorResetBoundary>
+  );
+}
 
-  if (isLoading)
-    return <p className="text-body-large text-on-surface-variant">Loading speakers…</p>;
-  if (isError || !data)
-    return <p className="text-body-large text-error">Speakers could not be loaded.</p>;
+function SpeakerListContent() {
+  const { data } = useSuspenseQuery(speakersQueryOptions);
+
+  if (data.length === 0) {
+    return (
+      <EmptyState
+        description="Speakers will show up here once they are announced."
+        icon="groups"
+        title="No speakers"
+      />
+    );
+  }
 
   return (
     <ul className="grid gap-6 sm:grid-cols-2">
@@ -35,4 +57,35 @@ export function SpeakerList() {
       ))}
     </ul>
   );
+}
+
+class SpeakerListErrorBoundary extends Component<
+  { children: ReactNode; onReset: () => void },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (!this.state.hasError) return this.props.children;
+
+    return (
+      <div className="flex flex-col items-start gap-3">
+        <p className="text-body-large text-error">Speakers could not be loaded.</p>
+        <button
+          className="text-label-large text-primary"
+          type="button"
+          onClick={() => {
+            this.props.onReset();
+            this.setState({ hasError: false });
+          }}
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
 }

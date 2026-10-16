@@ -1,3 +1,5 @@
+import { EmptyState } from "@/components/empty-state";
+import { LoadingState } from "@/components/loading-state";
 import { formatSlot } from "@/data-access-layer/sessionize";
 import { sessionsQueryOptions } from "@/data-access-layer/sessions";
 import { QueryErrorResetBoundary, useSuspenseQuery } from "@tanstack/react-query";
@@ -9,7 +11,7 @@ export function SessionList() {
     <QueryErrorResetBoundary>
       {({ reset }) => (
         <SessionListErrorBoundary onReset={reset}>
-          <Suspense fallback={<SessionListFallback />}>
+          <Suspense fallback={<LoadingState label="Loading the programme…" />}>
             <SessionListContent />
           </Suspense>
         </SessionListErrorBoundary>
@@ -20,6 +22,16 @@ export function SessionList() {
 
 function SessionListContent() {
   const { data } = useSuspenseQuery(sessionsQueryOptions);
+
+  if (data.length === 0) {
+    return (
+      <EmptyState
+        description="Talks will show up here once they are on the programme."
+        icon="calendar_month"
+        title="No sessions"
+      />
+    );
+  }
 
   return (
     <ul className="divide-outline-variant divide-y">
@@ -45,10 +57,6 @@ function SessionListContent() {
       ))}
     </ul>
   );
-}
-
-function SessionListFallback() {
-  return <p className="text-body-large text-on-surface-variant">Loading the programme…</p>;
 }
 
 class SessionListErrorBoundary extends Component<

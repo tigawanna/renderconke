@@ -76,7 +76,7 @@
 /* ---------- shadcn semantic tokens → M3 roles ---------- */
 
 :root,
-.dark {
+html[data-theme="dark"] {
   --background: var(--md-sys-color-surface);
   --foreground: var(--md-sys-color-on-surface);
   --card: var(--md-sys-color-surface-container-low);
