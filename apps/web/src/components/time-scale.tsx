@@ -13,11 +13,14 @@ export function TimeScale({
   sessions,
   onSelect,
   resetKey = 0,
+  value = null,
 }: {
   sessions: Session[];
   onSelect: (startsAt: string) => void;
   /** bump this to snap the marker back to the current time */
   resetKey?: number;
+  /** session start to show, for example while the programme is scrolled */
+  value?: string | null;
 }) {
   const track = useRef<HTMLDivElement>(null);
   const chosen = useRef<string | null>(null);
@@ -60,6 +63,14 @@ export function TimeScale({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetKey]);
 
+  useEffect(() => {
+    if (!value || sessions.length === 0) return;
+    const time = nairobiInstant(value).getTime();
+    const next = time <= start ? 0 : time >= end ? 1 : (time - start) / span;
+    chosen.current = value;
+    setRatio(next);
+  }, [value, start, end, span, sessions.length]);
+
   if (sessions.length === 0) return null;
 
   const ticks: number[] = [];
@@ -74,7 +85,7 @@ export function TimeScale({
   };
 
   return (
-    <div className="flex items-center gap-2 px-1 pt-2 pb-8">
+    <div className="flex items-start gap-2 px-1 pt-2 pb-12 md:items-center md:pb-6">
       <div className="relative min-w-0 flex-1">
         <div
           ref={track}
@@ -110,7 +121,7 @@ export function TimeScale({
                 style={{ left: `${((tick - start) / span) * 100}%` }}
               >
                 <span className="bg-outline h-2 w-px" />
-                <span className="text-label-small text-on-surface-variant mt-1 hidden whitespace-nowrap min-[480px]:block">
+                <span className="text-label-small text-on-surface-variant mt-1 block origin-top [writing-mode:vertical-lr] whitespace-nowrap md:[writing-mode:horizontal-tb]">
                   {clock.format(tick)}
                 </span>
               </span>

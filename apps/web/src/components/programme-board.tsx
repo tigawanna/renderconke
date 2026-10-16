@@ -12,6 +12,12 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/m3e/button";
 
+const clock = new Intl.DateTimeFormat("en-KE", {
+  hour: "numeric",
+  minute: "2-digit",
+  timeZone: "Africa/Nairobi",
+});
+
 export function ProgrammeBoard() {
   const client = useQueryClient();
   const navigate = useNavigate();
@@ -47,27 +53,45 @@ export function ProgrammeBoard() {
   const liveKey = rows.find((row) => row.sessions.some(isLive))?.key ?? null;
 
   const list = useRef<HTMLDivElement>(null);
+  const fromSlider = useRef(false);
   const [resetKey, setResetKey] = useState(0);
-  const [nowLabel, setNowLabel] = useState(() =>
-    new Intl.DateTimeFormat("en-KE", {
-      hour: "numeric",
-      minute: "2-digit",
-      timeZone: "Africa/Nairobi",
-    }).format(new Date()),
-  );
+  const [focusKey, setFocusKey] = useState<string | null>(null);
+  const highlighted = focusKey ?? liveKey ?? nearestKey(rows);
+  const timeLabel = highlighted
+    ? clock.format(nairobiInstant(highlighted))
+    : clock.format(new Date());
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setNowLabel(
-        new Intl.DateTimeFormat("en-KE", {
-          hour: "numeric",
-          minute: "2-digit",
-          timeZone: "Africa/Nairobi",
-        }).format(new Date()),
-      );
-    }, 30_000);
-    return () => clearInterval(timer);
-  }, []);
+    const viewport = list.current?.querySelector<HTMLElement>("[data-slot=scroll-area-viewport]");
+    if (!viewport) return;
+    let frame = 0;
+    const onScroll = () => {
+      if (fromSlider.current) return;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const root = viewport.getBoundingClientRect();
+        const anchor = root.top + Math.min(96, root.height * 0.28);
+        let best: HTMLElement | null = null;
+        let bestDistance = Infinity;
+        for (const node of viewport.querySelectorAll<HTMLElement>("[data-slot-row]")) {
+          const box = node.getBoundingClientRect();
+          if (box.bottom < root.top || box.top > root.bottom) continue;
+          const distance = Math.abs(box.top - anchor);
+          if (distance < bestDistance) {
+            best = node;
+            bestDistance = distance;
+          }
+        }
+        const key = best?.dataset.slotRow;
+        if (key) setFocusKey((current) => (current === key ? current : key));
+      });
+    };
+    viewport.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      viewport.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, [rows.length]);
 
   return (
     <div className="relative flex h-full min-h-0 flex-col gap-4">
@@ -106,11 +130,17 @@ export function ProgrammeBoard() {
         {rows.length > 0 ? (
           <TimeScale
             resetKey={resetKey}
+            value={highlighted}
             sessions={programme.data?.sessions ?? []}
             onSelect={(startsAt) => {
-              list.current?.querySelector(`#${CSS.escape(slotId(startsAt))}`)?.scrollIntoView({
-                block: "center",
-              });
+              fromSlider.current = true;
+              setFocusKey(startsAt);
+              list.current
+                ?.querySelector(`#${CSS.escape(slotId(startsAt))}`)
+                ?.scrollIntoView({ block: "center" });
+              window.setTimeout(() => {
+                fromSlider.current = false;
+              }, 500);
             }}
           />
         ) : null}
@@ -130,22 +160,43 @@ export function ProgrammeBoard() {
       ) : null}
       {rows.length > 0 ? (
         <ScrollArea ref={list} className="min-h-0 flex-1">
-          <SlotScroller rows={rows} speakers={programme.data?.speakers ?? []} liveKey={liveKey} />
+          <SlotScroller
+            rows={rows}
+            speakers={programme.data?.speakers ?? []}
+            focusKey={highlighted}
+          />
         </ScrollArea>
       ) : null}
       <div className="pointer-events-none absolute inset-x-0 bottom-2 flex justify-center md:bottom-3">
         <div className="bg-surface-container-high text-on-surface pointer-events-auto flex max-w-[calc(100%-1.5rem)] items-center gap-1 rounded-full py-1 pr-1 pl-3 shadow-elevation-2">
-          <span className="text-label-large shrink-0 pr-1">{nowLabel}</span>
-          <Button size="sm" variant="tonal" onClick={() => setResetKey((key) => key + 1)}>
+          <span className="text-label-large shrink-0 pr-1">{timeLabel}</span>
+          <Button
+            size="sm"
+            variant="tonal"
+            onClick={() => {
+              setFocusKey(null);
+              setResetKey((key) => key + 1);
+            }}
+          >
             Now
           </Button>
-          <Button size="sm" variant="text" render={<Link to="/sessions" />}>
-            <span className="md:hidden">Talks</span>
-            <span className="hidden md:inline">Sessions</span>
+          <Button
+            size="sm"
+            variant="text"
+            className="hidden md:inline-flex"
+            nativeButton={false}
+            render={<Link to="/sessions" />}
+          >
+            Sessions
           </Button>
-          <Button size="sm" variant="text" render={<Link to="/speakers" />}>
-            <span className="md:hidden">People</span>
-            <span className="hidden md:inline">Speakers</span>
+          <Button
+            size="sm"
+            variant="text"
+            className="hidden md:inline-flex"
+            nativeButton={false}
+            render={<Link to="/speakers" />}
+          >
+            Speakers
           </Button>
         </div>
       </div>
@@ -156,90 +207,108 @@ export function ProgrammeBoard() {
 function SlotScroller({
   rows,
   speakers,
-  liveKey,
+  focusKey,
 }: {
   rows: SessionRow[];
   speakers: Speaker[];
-  liveKey: string | null;
+  focusKey: string | null;
 }) {
-  const scroller = useRef<HTMLDivElement>(null);
-  const [activeKey, setActiveKey] = useState(liveKey ?? rows[0]?.key ?? null);
   const byId = new Map(speakers.map((speaker) => [speaker.id, speaker]));
   const activeIndex = Math.max(
     0,
-    rows.findIndex((row) => row.key === activeKey),
+    rows.findIndex((row) => row.key === focusKey),
   );
 
-  useEffect(() => {
-    if (!liveKey) return;
-    scroller.current?.querySelector(`#${CSS.escape(slotId(liveKey))}`)?.scrollIntoView({
-      block: "center",
-    });
-  }, [liveKey]);
-
-  useEffect(() => {
-    const root = scroller.current?.closest<HTMLElement>("[data-slot=scroll-area-viewport]");
-    if (!root || !scroller.current) return;
-    const nodes = [...scroller.current.querySelectorAll<HTMLElement>("[data-slot-row]")];
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const best = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        const key = best?.target instanceof HTMLElement ? best.target.dataset.slotRow : null;
-        if (key) setActiveKey(key);
-      },
-      { root, threshold: [0.45, 0.7] },
-    );
-    for (const node of nodes) observer.observe(node);
-    return () => observer.disconnect();
-  }, [rows]);
-
   return (
-    <div ref={scroller} className="flex flex-col gap-3 pb-20 md:gap-4 md:pb-24">
+    <div className="flex flex-col gap-3 pb-20 md:gap-4 md:pb-24">
       {rows.map((row, index) => {
         const live = row.sessions.some(isLive);
         const active = index === activeIndex;
         const beside = Math.abs(index - activeIndex) === 1;
+        const paired = row.sessions.length > 1;
+        const slotLabel = live
+          ? "Now"
+          : formatSlot(row.sessions[0].startsAt, row.sessions[0].endsAt);
         return (
           <section
             key={row.key}
             id={slotId(row.key)}
             data-slot-row={row.key}
+            style={{
+              transform: active ? "scale(1)" : beside ? "scale(0.94)" : "scale(0.9)",
+            }}
             className={[
-              "origin-center gap-3 transition-[transform,filter] motion-spatial-default",
-              row.sessions.length > 1
-                ? "flex snap-x snap-mandatory overflow-x-auto md:grid md:snap-none md:grid-cols-2 md:overflow-visible"
+              "origin-center transition-[transform,filter] motion-spatial-default",
+              paired
+                ? "flex flex-col overflow-hidden rounded-xl md:grid md:grid-cols-2 md:gap-3 md:overflow-visible md:rounded-none md:bg-transparent"
                 : "grid grid-cols-1",
-              active
-                ? "scale-100 blur-none"
-                : beside
-                  ? "md:scale-[0.86] md:blur-[1.5px]"
-                  : "opacity-80 md:scale-[0.8] md:blur-sm md:opacity-100",
+              paired
+                ? live
+                  ? "bg-tertiary-container text-on-tertiary-container"
+                  : "bg-surface-container text-on-surface"
+                : "",
+              active ? "z-1 blur-none" : beside ? "blur-[1.5px]" : "opacity-80 blur-sm",
             ].join(" ")}
           >
-            {row.sessions.map((session) => (
+            {paired ? (
+              <p className="text-label-medium px-4 pt-3 text-right md:hidden">{slotLabel}</p>
+            ) : null}
+            {row.sessions.map((session, sessionIndex) => (
               <Link
                 key={session.id}
                 to="/sessions/$sessionId"
                 params={{ sessionId: session.id }}
                 className={[
-                  "flex min-h-36 w-[88%] shrink-0 snap-center flex-col justify-between gap-3 rounded-xl p-4 no-underline md:min-h-44 md:w-auto md:gap-4 md:p-5",
+                  "flex min-h-24 flex-col justify-between gap-3 p-4 no-underline md:min-h-44 md:gap-4 md:rounded-xl md:p-5",
+                  paired && sessionIndex > 0 ? "border-outline border-t-2 md:border-t-0" : "",
+                  paired ? "" : "rounded-xl",
                   live
-                    ? "bg-tertiary-container text-on-tertiary-container"
-                    : "bg-surface-container text-on-surface",
+                    ? "md:bg-tertiary-container md:text-on-tertiary-container"
+                    : "md:bg-surface-container md:text-on-surface",
+                  paired
+                    ? ""
+                    : live
+                      ? "bg-tertiary-container text-on-tertiary-container"
+                      : "bg-surface-container text-on-surface",
                 ].join(" ")}
               >
-                <span>
-                  <span className="text-label-large block">
-                    {live ? "Now" : formatSlot(session.startsAt, session.endsAt)}
-                    {session.room ? ` · ${session.room}` : ""}
+                <span className="flex items-center gap-3 md:block">
+                  <span className="flex shrink-0 -space-x-2 md:hidden">
+                    {session.speakers.map((person) => {
+                      const speaker = byId.get(person.id);
+                      return speaker?.profilePicture ? (
+                        <img
+                          key={person.id}
+                          alt=""
+                          className="size-10 rounded-full object-cover ring-2 ring-surface-container"
+                          src={speaker.profilePicture}
+                        />
+                      ) : null;
+                    })}
                   </span>
-                  <span className="text-title-large md:text-headline-small mt-2 block text-balance">
-                    {session.title}
+                  <span className="min-w-0">
+                    <span className="text-label-medium md:text-label-large block">
+                      {paired ? (
+                        <>
+                          <span className="hidden md:inline">
+                            {slotLabel}
+                            {session.room ? " · " : ""}
+                          </span>
+                          {session.room}
+                        </>
+                      ) : (
+                        <>
+                          {slotLabel}
+                          {session.room ? ` · ${session.room}` : ""}
+                        </>
+                      )}
+                    </span>
+                    <span className="text-title-medium md:text-headline-small mt-1 block text-balance md:mt-2">
+                      {session.title}
+                    </span>
                   </span>
                 </span>
-                <span className="flex flex-wrap gap-2">
+                <span className="hidden flex-wrap gap-2 md:flex">
                   {session.speakers.map((person) => {
                     const speaker = byId.get(person.id);
                     return (
@@ -287,6 +356,20 @@ function groupByStart(sessions: Session[]): SessionRow[] {
     groups.set(session.startsAt, group);
   }
   return [...groups.entries()].map(([key, group]) => ({ key, sessions: group }));
+}
+
+function nearestKey(rows: SessionRow[]) {
+  const now = Date.now();
+  let best: SessionRow | undefined;
+  let bestDistance = Infinity;
+  for (const row of rows) {
+    const distance = Math.abs(nairobiInstant(row.key).getTime() - now);
+    if (distance < bestDistance) {
+      best = row;
+      bestDistance = distance;
+    }
+  }
+  return best?.key ?? null;
 }
 
 function isLive(session: Session) {
