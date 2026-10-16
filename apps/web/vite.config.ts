@@ -26,5 +26,9 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  ssr: {
+    // The package is ESM but its internal imports omit the .js extension.
+    noExternal: ["@material/material-color-utilities"],
+  },
   plugins: [chromeDevtoolsWellKnown(), tailwindcss(), tanstackStart(), viteReact()],
 });

@@ -34,8 +34,10 @@ const ColorModeContext = React.createContext<ColorModeContextValue | undefined>(
 
 const isColorMode = (value: string | null): value is ColorMode => MODES.some((m) => m === value);
 
-const systemMode = (): ResolvedColorMode =>
-  window.matchMedia(DARK_QUERY).matches ? "dark" : "light";
+const systemMode = (): ResolvedColorMode => {
+  if (typeof window === "undefined") return "light";
+  return window.matchMedia(DARK_QUERY).matches ? "dark" : "light";
+};
 
 const resolve = (mode: ColorMode): ResolvedColorMode => (mode === "system" ? systemMode() : mode);
 

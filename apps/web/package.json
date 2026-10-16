@@ -10,6 +10,7 @@
     "check:icons": "node scripts/icons.mjs --check"
   },
   "dependencies": {
+    "@base-ui/react": "catalog:",
     "@fontsource-variable/jetbrains-mono": "catalog:",
     "@fontsource-variable/roboto-flex": "catalog:",
     "@iconify/react": "catalog:",
@@ -22,6 +23,7 @@
     "@tanstack/react-router": "1.170.44",
     "@tanstack/react-router-ssr-query": "1.167.3",
     "@tanstack/react-start": "1.169.2",
+    "class-variance-authority": "catalog:",
     "cn": "catalog:",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
