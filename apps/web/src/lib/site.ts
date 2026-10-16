@@ -48,38 +48,21 @@ function clip(value: string, max: number) {
   return `${text.slice(0, max - 1).trimEnd()}…`;
 }
 
-export function ogImageUrl(input?: {
-  title?: string;
-  date?: string;
-  location?: string;
-  detail?: string;
-}) {
-  const params = new URLSearchParams();
-  if (input?.title) params.set("title", clip(input.title, 90));
-  if (input?.date) params.set("date", input.date);
-  if (input?.location) params.set("location", input.location);
-  if (input?.detail) params.set("detail", input.detail);
-  const query = params.toString();
-  return absoluteUrl(query ? `/og.png?${query}` : "/og.png");
+export function ogImageUrl() {
+  return absoluteUrl("/og.png");
 }
 
 type PageSeo = {
   title?: string;
   description?: string;
   path?: string;
-  kicker?: string;
 };
 
-export function pageHead({ title, description, path = "/", kicker }: PageSeo = {}) {
+export function pageHead({ title, description, path = "/" }: PageSeo = {}) {
   const documentTitle = title ? `${title} · ${siteConfig.name}` : siteConfig.title;
   const ogTitle = title ?? `${siteConfig.name} ${siteConfig.year}`;
   const summary = clip(description ?? siteConfig.description, 180);
-  const image = ogImageUrl({
-    title: ogTitle,
-    date: siteConfig.dates.displayDate,
-    location: siteConfig.venue.fullAddress,
-    detail: kicker,
-  });
+  const image = ogImageUrl();
   const url = absoluteUrl(path);
 
   return {

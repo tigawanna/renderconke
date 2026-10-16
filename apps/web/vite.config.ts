@@ -30,8 +30,6 @@ export default defineConfig({
   ssr: {
     // The package is ESM but its internal imports omit the .js extension.
     noExternal: ["@material/material-color-utilities"],
-    // Native image renderer. Leave it (and its font files) to Node.
-    external: ["takumi-js", "@takumi-rs/core", "@fontsource/inter"],
   },
   plugins: [devtools(), chromeDevtoolsWellKnown(), tailwindcss(), tanstackStart(), viteReact()],
 });

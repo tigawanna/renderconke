@@ -16,11 +16,6 @@ export const Route = createFileRoute("/sessions/$sessionId")({
       title: loaderData?.title ?? "Session",
       description: loaderData?.description,
       path: `/sessions/${params.sessionId}`,
-      kicker: loaderData
-        ? [formatSlot(loaderData.startsAt, loaderData.endsAt), loaderData.room]
-            .filter(Boolean)
-            .join(" · ")
-        : undefined,
     }),
   component: SessionPage,
 });

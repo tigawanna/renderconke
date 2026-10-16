@@ -14,7 +14,6 @@
     "@base-ui/react": "catalog:",
     "@fontsource-variable/jetbrains-mono": "catalog:",
     "@fontsource-variable/roboto-flex": "catalog:",
-    "@fontsource/inter": "catalog:",
     "@iconify/react": "catalog:",
     "@material/material-color-utilities": "catalog:",
     "@tanstack/react-query": "5.104.3",
@@ -27,7 +26,6 @@
     "react-dom": "^19.2.5",
     "shadcn": "catalog:",
     "tailwindcss": "^4.3.0",
-    "takumi-js": "catalog:",
     "tw-animate-css": "catalog:"
   },
   "devDependencies": {
