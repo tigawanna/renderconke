@@ -3,6 +3,10 @@ packages:
   - packages/*
   - tools/*
 
+minimumReleaseAgeExclude:
+  - vite-plus
+  - "@voidzero-dev/*"
+
 catalog:
   "@base-ui/react": ^1.9.0
   "@fontsource-variable/jetbrains-mono": ^5.3.0
