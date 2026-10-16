@@ -28,8 +28,8 @@ export function SessionList() {
     ["sessions", "list"],
     async (query) => {
       const [sessions, speakers] = await Promise.all([
-        client.ensureQueryData(sessionsQueryOptions),
-        client.ensureQueryData(speakersQueryOptions),
+        client.query({ ...sessionsQueryOptions, staleTime: "static" }),
+        client.query({ ...speakersQueryOptions, staleTime: "static" }),
       ]);
       return {
         sessions: sessions.filter((session) => matchesSession(session, query)),
@@ -77,16 +77,39 @@ export function SessionList() {
           />
         ) : null}
       </div>
-      <ScrollArea ref={list} className="min-h-0 flex-1">
-        <SessionRows
-          byId={byId}
-          isError={isError}
-          isLoading={isLoading}
-          isPlaceholderData={isPlaceholderData}
-          query={value}
-          sessions={sessions}
-        />
-      </ScrollArea>
+      {isLoading && !sessions ? (
+        <div className="flex min-h-0 flex-1">
+          <LoadingState label="Loading the programme…" />
+        </div>
+      ) : null}
+      {isError || (!sessions && !isLoading) ? (
+        <div className="flex min-h-0 flex-1">
+          <EmptyState
+            tone="error"
+            icon="error"
+            title="Programme unavailable"
+            description="The programme could not be loaded."
+          />
+        </div>
+      ) : null}
+      {sessions && sessions.length === 0 ? (
+        <div className="flex min-h-0 flex-1">
+          <EmptyState
+            description={
+              value
+                ? "Nothing in the programme matches that search."
+                : "Talks will show up here once they are on the programme."
+            }
+            icon="calendar_month"
+            title="No sessions"
+          />
+        </div>
+      ) : null}
+      {sessions && sessions.length > 0 ? (
+        <ScrollArea ref={list} className="min-h-0 flex-1">
+          <SessionRows byId={byId} isPlaceholderData={isPlaceholderData} sessions={sessions} />
+        </ScrollArea>
+      ) : null}
     </div>
   );
 }
@@ -94,43 +117,12 @@ export function SessionList() {
 function SessionRows({
   sessions,
   byId,
-  isLoading,
-  isError,
   isPlaceholderData,
-  query,
 }: {
-  sessions: Session[] | undefined;
+  sessions: Session[];
   byId: Map<string, Speaker>;
-  isLoading: boolean;
-  isError: boolean;
   isPlaceholderData: boolean;
-  query: string;
 }) {
-  if (isLoading && !sessions) return <LoadingState label="Loading the programme…" />;
-  if (isError || !sessions) {
-    return (
-      <EmptyState
-        tone="error"
-        icon="error"
-        title="Programme unavailable"
-        description="The programme could not be loaded."
-      />
-    );
-  }
-  if (sessions.length === 0) {
-    return (
-      <EmptyState
-        description={
-          query
-            ? "Nothing in the programme matches that search."
-            : "Talks will show up here once they are on the programme."
-        }
-        icon="calendar_month"
-        title="No sessions"
-      />
-    );
-  }
-
   return (
     <ItemGroup className={isPlaceholderData ? "pb-6 opacity-70" : "pb-6"}>
       {sessions.map((session) => (

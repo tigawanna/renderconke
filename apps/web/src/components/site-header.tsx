@@ -45,14 +45,6 @@ export function SiteHeader({
         </div>
       </div>
       <nav className="flex shrink-0 items-center gap-2">
-        <a
-          href={siteConfig.officialUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="text-label-large text-primary px-2 no-underline"
-        >
-          rendercon.org
-        </a>
         <Button
           aria-expanded={themeOpen}
           aria-label="Theme"

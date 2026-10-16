@@ -21,7 +21,7 @@ export function SpeakerList() {
   const { value, setValue, data, isLoading, isError, isPlaceholderData } = useSearchQuery(
     ["speakers", "list"],
     async (query) => {
-      const speakers = await client.ensureQueryData(speakersQueryOptions);
+      const speakers = await client.query(speakersQueryOptions);
       return speakers.filter((speaker) => matchesSpeaker(speaker, query));
     },
   );
@@ -43,17 +43,23 @@ export function SpeakerList() {
           ))}
         </SearchField>
       </div>
-      <ScrollArea className="min-h-0 flex-1">
-        {isLoading && !data ? <LoadingState label="Loading speakers…" /> : null}
-        {isError || (!data && !isLoading) ? (
+      {isLoading && !data ? (
+        <div className="flex min-h-0 flex-1">
+          <LoadingState label="Loading speakers…" />
+        </div>
+      ) : null}
+      {isError || (!data && !isLoading) ? (
+        <div className="flex min-h-0 flex-1">
           <EmptyState
             tone="error"
             icon="error"
             title="Speakers unavailable"
             description="Speakers could not be loaded."
           />
-        ) : null}
-        {data && data.length === 0 ? (
+        </div>
+      ) : null}
+      {data && data.length === 0 ? (
+        <div className="flex min-h-0 flex-1">
           <EmptyState
             description={
               value
@@ -63,8 +69,10 @@ export function SpeakerList() {
             icon="groups"
             title="No speakers"
           />
-        ) : null}
-        {data && data.length > 0 ? (
+        </div>
+      ) : null}
+      {data && data.length > 0 ? (
+        <ScrollArea className="min-h-0 flex-1">
           <ItemGroup className={isPlaceholderData ? "opacity-70" : undefined}>
             {data.map((speaker) => (
               <Item
@@ -83,8 +91,8 @@ export function SpeakerList() {
               </Item>
             ))}
           </ItemGroup>
-        ) : null}
-      </ScrollArea>
+        </ScrollArea>
+      ) : null}
     </div>
   );
 }

@@ -110,7 +110,56 @@ export function eventJsonLd() {
     organizer: {
       "@type": "Organization",
       name: siteConfig.name,
+      url: siteConfig.officialUrl,
       sameAs: [siteConfig.officialUrl, siteConfig.social.twitter, siteConfig.social.github],
     },
+  };
+}
+
+export function sessionJsonLd(session: {
+  id: string;
+  title: string;
+  description: string;
+  startsAt: string;
+  endsAt: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: session.title,
+    description: clip(session.description, 500),
+    startDate: session.startsAt,
+    endDate: session.endsAt,
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    image: ogImageUrl(),
+    url: absoluteUrl(`/sessions/${session.id}`),
+    location: {
+      "@type": "Place",
+      name: siteConfig.venue.name,
+      address: siteConfig.venue.fullAddress,
+    },
+    superEvent: {
+      "@type": "Event",
+      name: `${siteConfig.eventName} ${siteConfig.year}`,
+      url: siteConfig.officialUrl,
+    },
+  };
+}
+
+export function speakerJsonLd(speaker: {
+  id: string;
+  fullName: string;
+  bio: string;
+  tagLine: string;
+  profilePicture: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: speaker.fullName,
+    description: clip(speaker.bio || speaker.tagLine, 500),
+    jobTitle: speaker.tagLine,
+    image: speaker.profilePicture,
+    url: absoluteUrl(`/speakers/${speaker.id}`),
   };
 }

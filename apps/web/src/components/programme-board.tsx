@@ -24,8 +24,8 @@ export function ProgrammeBoard() {
   const search = useSearchQuery(["home", "search"], async (query) => {
     const needle = query.trim().toLowerCase();
     const [sessions, speakers] = await Promise.all([
-      client.ensureQueryData(sessionsQueryOptions),
-      client.ensureQueryData(speakersQueryOptions),
+      client.query({ ...sessionsQueryOptions, staleTime: "static" }),
+      client.query({ ...speakersQueryOptions, staleTime: "static" }),
     ]);
     if (!needle) return { sessions: [], speakers: [] };
     return {
@@ -42,8 +42,8 @@ export function ProgrammeBoard() {
   });
   const programme = useSearchQuery(["home", "programme"], async () => {
     const [sessions, speakers] = await Promise.all([
-      client.ensureQueryData(sessionsQueryOptions),
-      client.ensureQueryData(speakersQueryOptions),
+      client.query({ ...sessionsQueryOptions, staleTime: "static" }),
+      client.query({ ...speakersQueryOptions, staleTime: "static" }),
     ]);
     return { sessions, speakers };
   });
@@ -146,22 +146,28 @@ export function ProgrammeBoard() {
         ) : null}
       </div>
       {programme.isLoading && !programme.data ? (
-        <LoadingState label="Loading the programme…" />
+        <div className="flex min-h-0 flex-1">
+          <LoadingState label="Loading the programme…" />
+        </div>
       ) : null}
       {programme.isError ? (
-        <EmptyState
-          tone="error"
-          icon="error"
-          title="Programme unavailable"
-          description="The programme could not be loaded."
-        />
+        <div className="flex min-h-0 flex-1">
+          <EmptyState
+            tone="error"
+            icon="error"
+            title="Programme unavailable"
+            description="The programme could not be loaded."
+          />
+        </div>
       ) : null}
       {programme.data && rows.length === 0 ? (
-        <EmptyState
-          description="Talks will show up here once they are on the programme."
-          icon="calendar_month"
-          title="No sessions"
-        />
+        <div className="flex min-h-0 flex-1">
+          <EmptyState
+            description="Talks will show up here once they are on the programme."
+            icon="calendar_month"
+            title="No sessions"
+          />
+        </div>
       ) : null}
       {rows.length > 0 ? (
         <ScrollArea ref={list} className="min-h-0 flex-1">
