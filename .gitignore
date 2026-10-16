@@ -12,6 +12,7 @@ node_modules
 .tanstack
 dist
 dist-ssr
+apps/web/public/sitemap.xml
 *.local
 
 # Editor directories and files

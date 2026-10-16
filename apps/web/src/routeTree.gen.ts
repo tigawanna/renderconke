@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SessionsIndexRouteImport } from './routes/sessions/index'
 import { Route as SessionsSessionIdRouteImport } from './routes/sessions/$sessionId'
 import { Route as SpeakersIndexRouteImport } from './routes/speakers/index'
@@ -25,11 +24,6 @@ const IndexRoute = IndexRouteImport.update({
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   id: '/robots.txt',
   path: '/robots.txt',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SessionsIndexRoute = SessionsIndexRouteImport.update({
@@ -56,7 +50,6 @@ const SpeakersSpeakerIdRoute = SpeakersSpeakerIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sessions/$sessionId': typeof SessionsSessionIdRoute
   '/speakers/$speakerId': typeof SpeakersSpeakerIdRoute
   '/sessions/': typeof SessionsIndexRoute
@@ -65,7 +58,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sessions/$sessionId': typeof SessionsSessionIdRoute
   '/speakers/$speakerId': typeof SpeakersSpeakerIdRoute
   '/sessions': typeof SessionsIndexRoute
@@ -75,7 +67,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sessions/$sessionId': typeof SessionsSessionIdRoute
   '/speakers/$speakerId': typeof SpeakersSpeakerIdRoute
   '/sessions/': typeof SessionsIndexRoute
@@ -86,7 +77,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/robots.txt'
-    | '/sitemap.xml'
     | '/sessions/$sessionId'
     | '/speakers/$speakerId'
     | '/sessions/'
@@ -95,7 +85,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/robots.txt'
-    | '/sitemap.xml'
     | '/sessions/$sessionId'
     | '/speakers/$speakerId'
     | '/sessions'
@@ -104,7 +93,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/robots.txt'
-    | '/sitemap.xml'
     | '/sessions/$sessionId'
     | '/speakers/$speakerId'
     | '/sessions/'
@@ -114,7 +102,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SessionsSessionIdRoute: typeof SessionsSessionIdRoute
   SpeakersSpeakerIdRoute: typeof SpeakersSpeakerIdRoute
   SessionsIndexRoute: typeof SessionsIndexRoute
@@ -135,13 +122,6 @@ declare module '@tanstack/react-router' {
       path: '/robots.txt'
       fullPath: '/robots.txt'
       preLoaderRoute: typeof RobotsDottxtRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sessions/': {
@@ -178,7 +158,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SessionsSessionIdRoute: SessionsSessionIdRoute,
   SpeakersSpeakerIdRoute: SpeakersSpeakerIdRoute,
   SessionsIndexRoute: SessionsIndexRoute,
